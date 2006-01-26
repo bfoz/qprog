@@ -47,6 +47,7 @@ CentralWidget::CentralWidget() : QWidget()
 	VerifyCheckBox = new QCheckBox("Verify after programming");
 	VerifyCheckBox->setEnabled(false);
 	NewWindowOnReadCheckBox = new QCheckBox("Open new window on read");
+	NewWindowOnReadCheckBox->setEnabled(false);
 	ProgramOnFileChangeCheckBox = new QCheckBox("Reprogram on file change");
 	ProgramOnFileChangeCheckBox->setEnabled(false);
 
@@ -94,6 +95,8 @@ CentralWidget::CentralWidget() : QWidget()
 	FillTargetCombo();		//Fill target device list from settings
 
 	progressDialog = new QProgressDialog(this);
+	progressDialog->setModal(true);
+//	progressDialog->setCancelButton(NULL);	//Disable the cancel button
 }
 
 bool CentralWidget::FillTargetCombo()
@@ -124,7 +127,7 @@ void CentralWidget::onTargetComboChange(const QString &text)
 {
 	QSettings settings;
 	settings.setValue("CentralWidget/TargetCombo/Last/Text", text);
-	std::cout << "Target changed to " << text.toStdString() << std::endl;
+//	std::cout << "Target changed to " << text.toStdString() << std::endl;
 }
 
 void CentralWidget::browse()
@@ -166,7 +169,7 @@ bool do_reset(kitsrus::kitsrus_t &programmer)
 {
 	if(!programmer.hard_reset())
 	{
-		std::cout << "Hard reset failed. Trying a K149 reset...\n";
+//		std::cout << "Hard reset failed. Trying a K149 reset...\n";
 		//Try assuming that the programmer is a Kit149
 		programmer.set_149();
 		if(!programmer.hard_reset())
@@ -194,11 +197,10 @@ bool do_erase(kitsrus::kitsrus_t &programmer)
 		return false;
 	}
 //	programmer.chip_power_off();		//Turn the chip off
-//	std::cout << "Erased " /*<< PartName*/ << std::endl;
 	return true;
 }
 
-void do_rom_write(kitsrus::kitsrus_t &programmer, intelhex::hex_data &HexData)
+bool do_rom_write(kitsrus::kitsrus_t &programmer, intelhex::hex_data &HexData)
 {
 	const intelhex::hex_data::size_type num_rom_bytes = HexData.size_below_addr(programmer.get_rom_size());
 	
@@ -209,24 +211,30 @@ void do_rom_write(kitsrus::kitsrus_t &programmer, intelhex::hex_data &HexData)
 		if( !programmer.write_rom(HexData) )
 		{
 			std::cerr << "Error programming ROM\n";
-			programmer.hard_reset();		//Do a hard reset
-			exit(EXIT_FAILURE);								// and then bail out
+			programmer.hard_reset();		//Do a hard reset to clear the error and turn power off
+			return false;								// and then bail out
 		}
 		programmer.chip_power_off();		//Turn the chip off
 	}
 	else
 		std::cout << "No ROM words in file\n";
+	return true;
 }
 
-void do_config_write(kitsrus::kitsrus_t &programmer, intelhex::hex_data &HexData)
+bool do_config_write(kitsrus::kitsrus_t &programmer, intelhex::hex_data &HexData)
 {
 	programmer.chip_power_on();		//Activate programming voltages
 //	std::cout << "Programming Config for " << PartName << std::endl;
-	programmer.write_config(HexData);
+	if( !programmer.write_config(HexData) )
+	{
+		programmer.hard_reset();		//Do a hard reset to clear the error and turn power off
+		return false;
+	}
 	programmer.chip_power_off();		//Turn the chip off
+	return true;
 }
 
-void do_eeprom_write(kitsrus::kitsrus_t &programmer, intelhex::hex_data &HexData)
+bool do_eeprom_write(kitsrus::kitsrus_t &programmer, intelhex::hex_data &HexData)
 {
 	const intelhex::hex_data::size_type num_eeprom_bytes = HexData.size_in_range(programmer.get_eeprom_start(), programmer.get_eeprom_start() + programmer.get_eeprom_size());
 	
@@ -234,17 +242,26 @@ void do_eeprom_write(kitsrus::kitsrus_t &programmer, intelhex::hex_data &HexData
 	{
 		programmer.chip_power_on();		//Activate programming voltages
 //		std::cout << "Programming " << num_eeprom_bytes << " EEPROM bytes for " << PartName << std::endl;
-		programmer.write_eeprom(HexData);
+		if( !programmer.write_eeprom(HexData) )
+		{
+			programmer.hard_reset();		//Do a hard reset to clear the error and turn power off
+			return false;
+		}
 		programmer.chip_power_off();		//Turn the chip off
 	}
 	else
 		std::cout << "No EEPROM bytes in file\n";
+	return true;
 }
 
 bool do_rom_read(kitsrus::kitsrus_t &programmer, intelhex::hex_data &HexData)
 {
 	programmer.chip_power_on();		//Activate programming voltages
-	programmer.read_rom(HexData);	//Read ROM
+	if( !programmer.read_rom(HexData) )	//Read ROM
+	{
+		programmer.hard_reset();		//Do a hard reset to clear the error and turn power off
+		return false;
+	}
 	programmer.chip_power_off();	//Turn the chip off
 	return true;
 }
@@ -252,7 +269,11 @@ bool do_rom_read(kitsrus::kitsrus_t &programmer, intelhex::hex_data &HexData)
 bool do_config_read(kitsrus::kitsrus_t &programmer, intelhex::hex_data &HexData)
 {
 	programmer.chip_power_on();			//Activate programming voltages
-	programmer.read_config(HexData);	//Read Config
+	if( !programmer.read_config(HexData) )	//Read Config
+	{
+		programmer.hard_reset();		//Do a hard reset to clear the error and turn power off
+		return false;
+	}
 	programmer.chip_power_off();		//Turn the chip off
 	return true;
 }
@@ -260,9 +281,18 @@ bool do_config_read(kitsrus::kitsrus_t &programmer, intelhex::hex_data &HexData)
 bool do_eeprom_read(kitsrus::kitsrus_t &programmer, intelhex::hex_data &HexData)
 {
 	programmer.chip_power_on();		//Activate programming voltages
-	programmer.read_eeprom(HexData);	//Read EEPROM
+	if( !programmer.read_eeprom(HexData) )	//Read EEPROM
+	{
+		programmer.hard_reset();		//Do a hard reset to clear the error and turn power off
+		return false;
+	}
 	programmer.chip_power_off();		//Turn the chip off
 	return true;
+}
+
+bool handle_progress(void* p, int i, int max_i)
+{
+	return static_cast<CentralWidget*>(p)->handleProgress(i, max_i);
 }
 
 void CentralWidget::program_all()
@@ -273,12 +303,16 @@ void CentralWidget::program_all()
 	loadChipInfo(target, chip_info);	//Load the chip info from the settings
 	
 	//Grab the currently selected file name
-	QString file_name = (FileName->itemData(FileName->currentIndex())).toString();
-	if( file_name.isEmpty() )
+	if( FileName->currentIndex() == -1 )
 	{
-		QMessageBox::critical(this, "Error", "You must select a file to program");
-		return;
+		browse();	//Open a file dialog if a file hasn't been selected yet
+		if( FileName->currentIndex() == -1 )
+		{
+			QMessageBox::critical(this, "Error", "You must select a file to program");
+			return;
+		}
 	}
+	QString file_name = (FileName->itemData(FileName->currentIndex())).toString();
 
 	//Put this in a block to close the serial port early
 	{
@@ -292,7 +326,8 @@ void CentralWidget::program_all()
 			return;
 		}
 
-		do_reset(prog);			//Reset the programmer
+		if( !do_reset(prog) )			//Reset the programmer
+			return;
 
 		//Check the protocol version
 		std::string protocol = prog.get_protocol();
@@ -307,17 +342,23 @@ void CentralWidget::program_all()
 		if( EraseCheckBox->isChecked() )
 			do_erase(prog);
 
-		//Set a progress callback
-		//Create the progress dialog
+		prog.set_callback(&handle_progress, this);	//Set the progress callback
 
 		//Do the programming sequence
 		//	For some reason config has to be written first or the programmer locks up
-		do_config_write(prog, HexData);
-		do_eeprom_write(prog, HexData);
-		do_rom_write(prog, HexData);
+		progressDialog->setLabelText("Writing Config");	//Set the progress dialog label
+		if( !do_config_write(prog, HexData) )
+			return;
+		
+		progressDialog->setLabelText("Writing EEPROM");	//Set the progress dialog label
+		if( !do_eeprom_write(prog, HexData) )
+			return;
+		
+		progressDialog->setLabelText("Writing ROM");	//Set the progress dialog label
+		do_rom_write(prog, HexData);					//Write the ROM words
 	}
 
-	QMessageBox::information(this, "Program all", "Programming All");
+//	QMessageBox::information(this, "Program all", "Programming All");
 }
 
 void CentralWidget::read()
@@ -340,7 +381,8 @@ void CentralWidget::read()
 			QMessageBox::critical(this, "Error", "Could not open serial port");
 			return;
 		}
-		do_reset(prog);			//Reset the programmer
+		if( !do_reset(prog) )			//Reset the programmer
+			return;
 		
 		//Check the protocol version
 		std::string protocol = prog.get_protocol();
@@ -350,26 +392,28 @@ void CentralWidget::read()
 			return;
 		}
 
+		prog.set_callback(&handle_progress, this);	//Set the progress callback
 		prog.init_program_vars();	//Initialize programming variables
 
-		std::cout << "Reading " << prog.get_rom_size() << " ROM words\n";
-		do_rom_read(prog, HexData);
-		std::cout << "Reading CONFIG\n";
-		do_config_read(prog, HexData);
-		std::cout << "Reading " << prog.get_eeprom_size() << " EEPROM bytes\n";
-		do_eeprom_read(prog, HexData);
+//		std::cout << "Reading " << prog.get_rom_size() << " ROM words\n";
+		progressDialog->setLabelText("Reading ROM");	//Set the progress dialog label
+		if( !do_rom_read(prog, HexData) )
+			return;
+		
+		progressDialog->setLabelText("Reading Config");	//Set the progress dialog label
+		if( !do_config_read(prog, HexData) )
+			return;
+
+//		std::cout << "Reading " << prog.get_eeprom_size() << " EEPROM bytes\n";
+		progressDialog->setLabelText("Reading EEPROM");	//Set the progress dialog label
+		if( !do_eeprom_read(prog, HexData) )
+			return;
 	}
-	std::cout << "Read " << HexData.size() << " words from " << target.toStdString() << " into " << std::endl;
+//	std::cout << "Read " << HexData.size() << " words from " << target.toStdString() << " into " << std::endl;
 
 	QString out_file(QFileDialog::getSaveFileName(this));
 	if( !out_file.isEmpty() )
 		HexData.write(out_file.toStdString().c_str());
-
-	//Set a progress callback
-	//Create the progress dialog
-//	QMessageBox::information(this, "Read", "Read");
-//	std::cout << "done read\n";
-
 }
 
 void CentralWidget::verify()
@@ -395,7 +439,8 @@ void CentralWidget::bulk_erase()
 			QMessageBox::critical(this, "Error", "Could not open serial port");
 			return;
 		}
-		do_reset(prog);			//Reset the programmer
+		if( !do_reset(prog) )			//Reset the programmer
+			return;
 		
 		//Check the protocol version
 		std::string protocol = prog.get_protocol();

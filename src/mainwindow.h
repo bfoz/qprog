@@ -4,7 +4,7 @@
 	
 	Created January 6, 2006 by Brandon Fosdick
 	
-	Copyright 2005 Brandon Fosdick (BSD License)
+	Copyright 2006 Brandon Fosdick (BSD License)
 */
 
 #ifndef	MAINWINDOW_H
@@ -22,11 +22,13 @@ public:
 	MainWindow();
 
 private slots:
+	void handleAbout();
 	void updateChipInfo();
 	void cancelDownload();
 	void httpRequestFinished(int, bool);
 	void readResponseHeader(const QHttpResponseHeader &);
 	void updateDataReadProgress(int, int);
+	void updateChipInfoFromFile();
 
 private:
 	QBuffer	*buffer;

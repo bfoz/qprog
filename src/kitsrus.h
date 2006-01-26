@@ -105,17 +105,29 @@ namespace kitsrus
 		kitsrus_t(const kitsrus_t&);	//No copy
 		void	close()	{	com.close();	}
 
-	public:
+		bool (*callback)(void*,int,int);
+		void*	callback_payload;
+		bool	emit_callback(int i, int max_i)
+		{
+			if( callback != NULL )
+				return callback(callback_payload, i, max_i);
+			else
+				return true;	//Lack of a callback isn't an error
+		}
+		
+public:
 		typedef	chipinfo::chipinfo::rom_size_type	rom_size_type;
 		typedef	chipinfo::chipinfo::eeprom_size_type	eeprom_size_type;
+		typedef	bool(*callback_t)(void*,int,int);
 
-		kitsrus_t(QString &port, chipinfo::chipinfo chip) : com(port), info(chip), firmware(-1)
+		kitsrus_t(QString &port, chipinfo::chipinfo chip) : com(port), info(chip), firmware(-1), callback(NULL)
 		{
 			com.setBaudRate(BAUD19200);
 			com.setDataBits(DATA_8);
 			com.setParity(PAR_NONE);
 			com.setStopBits(STOP_1);
 			com.setFlowControl(FLOW_OFF);
+			com.setTimeout(0,0);
 		}
 		~kitsrus_t() { close(); }
 
@@ -130,17 +142,24 @@ namespace kitsrus
 		bool	chip_power_cycle();
 		bool	write_rom(intelhex::hex_data &);
 		bool	write_eeprom(intelhex::hex_data &);
-		void	write_config(intelhex::hex_data &);
+		bool	write_config(intelhex::hex_data &);
 		void	write_calibration();
-		void	read_rom(intelhex::hex_data &);
-		void	read_eeprom(intelhex::hex_data &);
-		void	read_config(intelhex::hex_data &);
+		bool	read_rom(intelhex::hex_data &);
+		bool	read_eeprom(intelhex::hex_data &);
+		bool	read_config(intelhex::hex_data &);
 		bool	erase_chip();
 		void	blank_check_rom();
 		void	blank_check_eeprom();
 		void	write_18F_fuse();
 		bool	detect_chip();
 		int	get_version();
+		
+		void set_callback(callback_t f, void *p)	//Function and pointer to pass to function
+		{
+			callback = f;
+			callback_payload = p;
+		}
+		
 /*
 	#define	CMD_NOT_IN_SOCKET		0x13
 	#define	CMD_WR_DEBUG_VECTOR	0x16

@@ -18,8 +18,8 @@
 namespace kitsrus
 {
 
-	#define	HIBYTE(a)	(u_int8_t)(a>>8)
-	#define	LOBYTE(a)	(u_int8_t)(a&0x00FF)
+	#define	HIBYTE(a)	(uint8_t)(a>>8)
+	#define	LOBYTE(a)	(uint8_t)(a&0x00FF)
 
 	//Switch from power-on mode to command mode
 	bool kitsrus_t::command_mode()
@@ -48,7 +48,11 @@ namespace kitsrus
 	bool kitsrus_t::hard_reset()
 	{
 		set_dtr();		//Set DTR high
+#ifdef	Q_WS_WIN	//Deal with win32 stupidity
+		Sleep(100);
+#else
 		usleep(10);		//Delay
+#endif
 		clear_dtr();	//Set DTR low
 
 		if( read()=='B' )
@@ -133,7 +137,8 @@ namespace kitsrus
 			switch(read())
 			{
 				case 'P':
-					std::cout << ".\n";
+//					std::cout << ".\n";
+					emit_callback((j>size)?size:j,size);
 					return true;
 				case 'N':
 					std::cerr << __FUNCTION__ << ": Got N at address ";
@@ -158,13 +163,16 @@ namespace kitsrus
 						write( a & 0x00FF);
 						++j;
 					}
-					std::cout << "." << std::flush;
+					if( !emit_callback((j>size)?size:j,size) )	//Emit callback and check for cancellation
+						return false;
+//					std::cout << "." << std::flush;
 					break;
 				default:
 					std::cerr << __FUNCTION__ << ": Got unexpected character\n";
 					return false;
 			}
 		}
+		return true;
 	}
 
 //#define	WRITE_EEPROM_DEBUG
@@ -173,8 +181,9 @@ namespace kitsrus
 //		uint8_t	c;
 //		uint8_t i;
 		intelhex::hex_data::address_t	j(info.get_eeprom_start());
+		intelhex::hex_data::address_t	eeprom_start(info.get_eeprom_start());
 		intelhex::hex_data::address_t	eeprom_end;
-//		uint16_t k;
+		uint16_t progress;
 		intelhex::hex_data::size_type size;
 		
 		//Ideally we would figure out how many ROM words are going to be written
@@ -204,11 +213,12 @@ namespace kitsrus
 			switch(read())
 			{
 				case 'P':
-					std::cout << ".\n";
+//					std::cout << ".\n";
+					emit_callback((progress>size)?size:progress,size);
 					return true;
 				case 'Y':			
 #if !defined(WRITE_EEPROM_DEBUG)
-					std::cout << "." << std::flush;
+//					std::cout << "." << std::flush;
 #endif
 					write( HexData.get(j, 0xFF) & 0x00FF);
 #if defined(WRITE_EEPROM_DEBUG)
@@ -220,15 +230,19 @@ namespace kitsrus
 					std::cout << __FUNCTION__ << ": wrote " << std::hex << HexData[j] << "\n";
 #endif
 					++j;
+					progress = j - eeprom_start;
+					if( !emit_callback((progress>size)?size:progress,size) )	//Emit callback and check for cancellation
+						return false;
 					break;
 				default:
 					std::cerr << __FUNCTION__ << ": Got unexpected character\n";
 					return false;
 			}
 		}
+		return true;
 	}
 
-	void kitsrus_t::write_config(intelhex::hex_data &HexData)
+	bool kitsrus_t::write_config(intelhex::hex_data &HexData)
 	{
 		std::vector<uint8_t> tmp_config(22, 0xFF);
 		
@@ -260,7 +274,7 @@ namespace kitsrus
 			else
 			{
 				std::cerr << __FUNCTION__ << ": no config bits\n";
-				return;		//FIXME
+				return false;		//FIXME
 			}
 		}
 		write(CMD_WRITE_CONFIG);
@@ -269,17 +283,20 @@ namespace kitsrus
 		for( i=0; i<22; ++i)
 		{
 			write(tmp_config[i]);
+			if( !emit_callback(i+1+2, 22+2) )	//Emit callback and check for cancellation
+				return false;
 		}
 //		std::cout << __FUNCTION__ << "1" << std::endl;
 		read();	//Throw away the ack
 //		std::cout << __FUNCTION__ << "2" << std::endl;
+		return true;
 	}
 
 	void kitsrus_t::write_calibration()
 	{}
 
 	//Read from a PIC into a hex_data structure
-	void kitsrus_t::read_rom(intelhex::hex_data &HexData)
+	bool kitsrus_t::read_rom(intelhex::hex_data &HexData)
 	{
 		intelhex::hex_data::element a;
 		
@@ -291,18 +308,22 @@ namespace kitsrus
 			a = (read() << 8) & 0xFF00;
 			a |= read() & 0x00FF;
 			HexData[i] = a;
+			if( !emit_callback(i+1, info.rom_size) )	//Emit callback and check for cancellation
+				return false;
 		}
+
 //		std::cout << "\r";
 //		std::cout << "\nRead " << info.rom_size << " words\n";
+		return true;
 	}
 
-	void kitsrus_t::read_eeprom(intelhex::hex_data &HexData)
+	bool kitsrus_t::read_eeprom(intelhex::hex_data &HexData)
 	{
 		intelhex::hex_data::address_t i(info.get_eeprom_start());
 		const intelhex::hex_data::address_t stop(i + info.eeprom_size);
 
 //		intelhex::hex_data::element a;
-//		intelhex::hex_data::address_t j(0);
+		intelhex::hex_data::address_t j(1);
 
 //		std::cout << __FUNCTION__ << ": eeprom_start = " << std::hex << i << std::endl;
 //		std::cout << __FUNCTION__ << ": eeprom_stop = " << std::hex << stop << std::endl;
@@ -312,13 +333,16 @@ namespace kitsrus
 		for(; i<stop; ++i)
 		{
 			HexData[i] = read();
+			if( !emit_callback(j++, info.eeprom_size) )	//Emit callback and check for cancellation
+				return false;
 //			std::cout << __FUNCTION__ << ": HexData[" << std::hex << i << "] = " << std::hex << HexData[i] << std::endl;
 //			a = read();
 //			std::cout << __FUNCTION__ << ": j = " << std::hex << (j++) << "\t" << std::hex << a << "\n";
 		}
+		return true;
 	}
 
-	void kitsrus_t::read_config(intelhex::hex_data &HexData)
+	bool kitsrus_t::read_config(intelhex::hex_data &HexData)
 	{
 		intelhex::hex_data::element	a[26];
 		write(CMD_READ_CONFIG);
@@ -332,6 +356,8 @@ namespace kitsrus
 		for(unsigned i=0; i<26; ++i)
 		{
 			a[i] = read();
+			if( !emit_callback(i+1, 26) )	//Emit callback and check for cancellation
+				return false;
 //			std::cout << __FUNCTION__ << ": read " << std::hex << a[i] << "\n";
 		}
 		
@@ -344,6 +370,7 @@ namespace kitsrus
 
 			HexData[0x2007] = (a[0x0B] << 8) | a[0x0A];
 		}
+		return true;
 	}
 
 	bool kitsrus_t::erase_chip()

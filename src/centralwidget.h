@@ -10,6 +10,8 @@
 #ifndef	CENTRALWIDGET_H
 #define	CENTRALWIDGET_H
 
+#include <iostream>
+
 #include <QCheckBox>
 #include <QComboBox>
 #include <QWidget>
@@ -22,6 +24,15 @@ class CentralWidget : public QWidget
 public:
 	CentralWidget();
 	bool	FillTargetCombo();
+
+	//Handle a progress update from the programmer
+	//	Returns false if the cancel button was clicked, otherwise true
+	bool handleProgress(int i, int max_i)
+	{
+		progressDialog->setMaximum(max_i);
+		progressDialog->setValue(i);
+		return !progressDialog->wasCanceled();
+	}
 
 private slots:
 	void onTargetComboChange(const QString &);
@@ -49,6 +60,8 @@ private:
 	{
 		return ProgrammerDeviceNode->itemData(ProgrammerDeviceNode->currentIndex()).toString();
 	}
+	
+
 };
 
 #endif	//CENTRALWIDGET_H

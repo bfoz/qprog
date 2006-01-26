@@ -1,0 +1,13 @@
+Version 0.2 - January 26, 2006
+-Chip info can be updated from a file downloaded from http://bfoz.net/projects/qprog/
+-"New window on read" has been disabled until supporting code is written
+-Read and Program now display progress dialogs
+-A file dialog is presented when "Program" is clicked with no file selected
+-Added an About menu item and a very basic dialog
+-All instances of u_int8_t in kitsrus.cc replaced with uint8_t (for win32)
+-Functions program_all, read and bulk_erase now error out on a bad reset
+-kitsrus_t::open() now calls setTimeout(0,0) (for win32 compatability)
+-Call Sleep() instead of usleep() on Win32
+
+Version 0.1 - January 18, 2006
+-Initial Release
