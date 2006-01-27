@@ -9,6 +9,7 @@ macx {
 	MOC_DIR = build
 } else:win32 {
 	TARGET = QProg
+	CONFIG += static
 } else {
 	TARGET = qprog
 }
