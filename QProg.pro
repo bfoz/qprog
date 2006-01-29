@@ -3,13 +3,15 @@
 ######################################################################
 
 TEMPLATE = app
-CONFIG	+= warn_on qt thread debug
+CONFIG	+= warn_on qt
 macx {
 	TARGET = QProg
 	MOC_DIR = build
 } else:win32 {
 	TARGET = QProg
-	CONFIG += static
+	CONFIG += static			#Static link Qt libs
+	QMAKE_LFLAGS -= -mthreads	#remove dependency on mingwm10.dll (threaded exceptions)
+	CONFIG -= exceptions		#disallow exceptions due to above
 } else {
 	TARGET = qprog
 }
