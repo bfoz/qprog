@@ -17,9 +17,10 @@
 
 namespace kitsrus
 {
-
+#ifndef	Q_WS_WIN
 	#define	HIBYTE(a)	(uint8_t)(a>>8)
 	#define	LOBYTE(a)	(uint8_t)(a&0x00FF)
+#endif	//Q_WS_WIN
 
 	//Switch from power-on mode to command mode
 	bool kitsrus_t::command_mode()
