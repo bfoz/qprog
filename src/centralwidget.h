@@ -36,6 +36,7 @@ public:
 
 private slots:
 	void onTargetComboChange(const QString &);
+	void onDeviceComboChange(const QString &);
 	void browse();
 
 	void program_all();

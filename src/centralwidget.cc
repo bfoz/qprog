@@ -40,6 +40,8 @@ CentralWidget::CentralWidget() : QWidget()
 	QLabel	*TargetTypeLabel = new QLabel("Target Device");
 	
 	ProgrammerDeviceNode = new QComboBox();
+	connect(ProgrammerDeviceNode, SIGNAL(activated(const QString&)), this, SLOT(onDeviceComboChange(const QString &)));
+
 	TargetType = new QComboBox();
 	connect(TargetType, SIGNAL(activated(const QString&)), this, SLOT(onTargetComboChange(const QString &)));
 
@@ -94,6 +96,14 @@ CentralWidget::CentralWidget() : QWidget()
 	FillPortCombo();		//Fill the programmer dropdown with the available ports
 	FillTargetCombo();		//Fill target device list from settings
 
+	//Set the device combo to the last used port
+	QSettings settings;
+	QString last_device = settings.value("CentralWidget/DeviceCombo/Last/Text").toString();
+	int j=0;
+	if( !last_device.isEmpty() )
+		if( (j = ProgrammerDeviceNode->findText(last_device)) != -1 )
+			ProgrammerDeviceNode->setCurrentIndex(j);
+	
 	progressDialog = new QProgressDialog(this);
 	progressDialog->setModal(true);
 //	progressDialog->setCancelButton(NULL);	//Disable the cancel button
@@ -127,7 +137,12 @@ void CentralWidget::onTargetComboChange(const QString &text)
 {
 	QSettings settings;
 	settings.setValue("CentralWidget/TargetCombo/Last/Text", text);
-//	std::cout << "Target changed to " << text.toStdString() << std::endl;
+}
+
+void CentralWidget::onDeviceComboChange(const QString &text)
+{
+	QSettings settings;
+	settings.setValue("CentralWidget/DeviceCombo/Last/Text", text);
 }
 
 void CentralWidget::browse()
