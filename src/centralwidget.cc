@@ -196,7 +196,7 @@ bool do_erase(kitsrus::kitsrus_t &programmer)
 		QMessageBox::critical(0, "Error", "Could not erase part");
 		return false;
 	}
-//	programmer.chip_power_off();		//Turn the chip off
+	programmer.chip_power_off();		//Turn the chip off
 	return true;
 }
 
