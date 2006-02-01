@@ -3,6 +3,7 @@ Version 0.3
 -Remembers last five opened files
 -Verify after program enabled
 -Browse button opens directory of previously selected file, if any
+-Verify button is enabled and functioning
 
 Version 0.2.1 - January 29, 2006
 -Bugfix release for Windows platform issues

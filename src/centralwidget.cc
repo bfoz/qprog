@@ -54,7 +54,6 @@ CentralWidget::CentralWidget() : QWidget()
 	QPushButton	*ProgramButton = new QPushButton("Program");
 	QPushButton	*ReadButton = new QPushButton("Read");
 	QPushButton	*VerifyButton = new QPushButton("Verify");
-	VerifyButton->setEnabled(false);
 	QPushButton	*EraseButton = new QPushButton("Erase");
 	connect(ProgramButton, SIGNAL(clicked()), this, SLOT(program_all()));
 	connect(ReadButton, SIGNAL(clicked()), this, SLOT(read()));
@@ -492,7 +491,44 @@ void CentralWidget::read()
 
 void CentralWidget::verify()
 {
-	QMessageBox::information(this, "Verify", "Verify");
+	chipinfo::chipinfo	chip_info;
+	QString	target(TargetType->itemText(TargetType->currentIndex()));
+	
+	loadChipInfo(target, chip_info);	//Load the chip info from the settings
+	
+	//Grab the currently selected file name
+	if( FileName->currentIndex() == -1 )
+	{
+		browse();	//Open a file dialog if a file hasn't been selected yet
+		if( FileName->currentIndex() == -1 )
+		{
+			QMessageBox::critical(this, "Error", "You must select a file to verify against");
+			return;
+		}
+	}
+	QString file_name = (FileName->itemData(FileName->currentIndex())).toString();
+	
+	//Put this in a block to close the serial port early
+	{
+		QString	path(currentPath());
+		kitsrus::kitsrus_t	prog(path, chip_info);	//Programmer interface
+		intelhex::hex_data HexData(file_name.toStdString());	//Load the hex file
+		
+		if( !doProgrammerInit(prog) )
+			return;
+		
+		intelhex::hex_data VerifyData;
+		if( !do_read_all(prog, VerifyData, progressDialog) )
+		{
+			progressDialog->reset();
+			QMessageBox::critical(this, "Error", tr("Error reading chip"));
+		}
+		
+		if(intelhex::compare(HexData, VerifyData) )
+			QMessageBox::information(this, "Verify Results", "Pass");
+		else
+			QMessageBox::information(this, "Verify Results", "Fail");
+	}
 }
 
 void CentralWidget::bulk_erase()
