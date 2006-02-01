@@ -155,7 +155,13 @@ void CentralWidget::onDeviceComboChange(const QString &text)
 
 void CentralWidget::browse()
 {
-	QString directory = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath());
+	QString initdir;
+	if( FileName->currentIndex() == -1 )
+		initdir = QDir::currentPath();
+	else
+		initdir = (FileName->itemData(FileName->currentIndex())).toString();
+			
+	QString directory = QFileDialog::getOpenFileName(this, tr("Open File"), initdir);
 	if( directory.size() != 0 )
 	{
 		QString str(directory);
