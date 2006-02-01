@@ -64,6 +64,8 @@ CentralWidget::CentralWidget() : QWidget()
 	connect(EraseButton, SIGNAL(clicked()), this, SLOT(bulk_erase()));
 
 	FileName = new QComboBox();
+	FileName->setMaxCount(5);
+
 	QPushButton	*BrowseButton = new QPushButton("Browse");
 	connect(BrowseButton, SIGNAL(clicked()), this, SLOT(browse()));
 	QLabel		*FileNameLabel = new QLabel("File");
@@ -104,9 +106,17 @@ CentralWidget::CentralWidget() : QWidget()
 		if( (j = ProgrammerDeviceNode->findText(last_device)) != -1 )
 			ProgrammerDeviceNode->setCurrentIndex(j);
 	
+	//Restore the file list from settings
+	j = settings.beginReadArray("CentralWidget/FileName/Last");
+	for(int i = 0; i < j; ++i)
+	{
+		settings.setArrayIndex(i);
+		FileName->addItem(settings.value("Name").toString(), settings.value("Path"));
+	}
+	settings.endArray();
+	
 	progressDialog = new QProgressDialog(this);
 	progressDialog->setModal(true);
-//	progressDialog->setCancelButton(NULL);	//Disable the cancel button
 }
 
 bool CentralWidget::FillTargetCombo()
@@ -154,6 +164,17 @@ void CentralWidget::browse()
 		str.remove(0, str.lastIndexOf('/')+1);	//Don't display leading path info
 		FileName->addItem(str, QVariant(directory));
 		FileName->setCurrentIndex(FileName->count() - 1);
+
+		//Save the new file list to settings
+		QSettings settings;
+		settings.beginWriteArray("CentralWidget/FileName/Last");
+		for(int i = 0; i < FileName->count(); ++i)
+		{
+			settings.setArrayIndex(i);
+			settings.setValue("Name", FileName->itemText(i));
+			settings.setValue("Path", FileName->itemData(i));
+		}
+		settings.endArray();
 	}
 }
 
