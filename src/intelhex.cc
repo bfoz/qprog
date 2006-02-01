@@ -370,7 +370,7 @@ namespace intelhex
 			checksum += static_cast<uint8_t>(i->first & 0x00FF);
 			checksum += static_cast<uint8_t>(i->first >> 8);
 			os << "00";											//Record type
-			for(int j=0; j<i->second.size(); j++)	//Store the data bytes, LSB first, ASCII HEX
+			for(unsigned j=0; j<i->second.size(); ++j)	//Store the data bytes, LSB first, ASCII HEX
 			{
 				os.width(2);
 				os << (i->second[j] & 0x00FF);
@@ -409,6 +409,26 @@ namespace intelhex
 				i->second.erase(k, i->second.end());	//Truncate the original block
 			}
 		}
+	}
+
+	//Compare two sets of hex data
+	//	Return true is every word in hex1 has a corresponding, and equivalent, word in hex2
+	//	Assumes both data sets are sorted
+	bool compare(hex_data& hex1, hex_data& hex2)
+	{
+		//Walk block list from hex1
+		for( hex_data::iterator i = hex1.begin(); i != hex1.end(); ++i )
+		{
+			//Walk the block
+			hex_data::address_t addr(i->first);
+			for( hex_data::data_container::iterator j = i->second.begin(); j != i->second.end(); ++j)
+			{
+				if( (*j) != hex2.get(addr, 0xFFFF) )
+					return false;
+				++addr;
+			}
+		}
+		return true;
 	}
 
 }

@@ -77,5 +77,6 @@ namespace intelhex
 		void		truncate(size_type);			//Truncate all of the blocks to a given length
 	};
 
+	bool compare(hex_data&, hex_data&);
 }
 #endif
