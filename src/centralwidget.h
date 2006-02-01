@@ -18,6 +18,8 @@
 #include <QPushButton>
 #include <QProgressDialog>
 
+#include	"kitsrus.h"
+
 class CentralWidget : public QWidget
 {
 	Q_OBJECT
@@ -62,7 +64,7 @@ private:
 		return ProgrammerDeviceNode->itemData(ProgrammerDeviceNode->currentIndex()).toString();
 	}
 	
-
+	bool doProgrammerInit(kitsrus::kitsrus_t&);
 };
 
 #endif	//CENTRALWIDGET_H

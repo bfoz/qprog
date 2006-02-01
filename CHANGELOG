@@ -1,6 +1,7 @@
 Version 0.3
 -Last used programmer device is saved across sessions
 -Remembers last five opened files
+-Verify after program enabled
 
 Version 0.2.1 - January 29, 2006
 -Bugfix release for Windows platform issues

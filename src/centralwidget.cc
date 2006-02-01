@@ -29,7 +29,6 @@
 
 #include "chipinfo.h"
 #include "intelhex.h"
-#include	"kitsrus.h"
 #include "centralwidget.h"
 
 #include "qextserialport.h"
@@ -47,7 +46,6 @@ CentralWidget::CentralWidget() : QWidget()
 
 	EraseCheckBox = new QCheckBox("Erase before programming");
 	VerifyCheckBox = new QCheckBox("Verify after programming");
-	VerifyCheckBox->setEnabled(false);
 	NewWindowOnReadCheckBox = new QCheckBox("Open new window on read");
 	NewWindowOnReadCheckBox->setEnabled(false);
 	ProgramOnFileChangeCheckBox = new QCheckBox("Reprogram on file change");
@@ -331,6 +329,76 @@ bool handle_progress(void* p, int i, int max_i)
 	return static_cast<CentralWidget*>(p)->handleProgress(i, max_i);
 }
 
+//Handle the actual write sequence
+bool do_write_all(kitsrus::kitsrus_t& prog, intelhex::hex_data &HexData, bool erase_first, QProgressDialog *progressDialog)
+{
+	//If erase before programming...
+	if( erase_first )
+		do_erase(prog);
+	
+	//Do the programming sequence
+	//	For some reason config has to be written first or the programmer locks up
+	progressDialog->setLabelText("Writing Config");	//Set the progress dialog label
+	if( !do_config_write(prog, HexData) )
+		return false;
+	
+	progressDialog->setLabelText("Writing EEPROM");	//Set the progress dialog label
+	if( !do_eeprom_write(prog, HexData) )
+		return false;
+	
+	progressDialog->setLabelText("Writing ROM");	//Set the progress dialog label
+	if( !do_rom_write(prog, HexData) )					//Write the ROM words
+		return false;
+
+	return true;
+}
+
+//Handle the actual write sequence
+bool do_read_all(kitsrus::kitsrus_t& prog, intelhex::hex_data &HexData, QProgressDialog *progressDialog)
+{
+	//		std::cout << "Reading " << prog.get_rom_size() << " ROM words\n";
+	progressDialog->setLabelText("Reading ROM");	//Set the progress dialog label
+	if( !do_rom_read(prog, HexData) )
+		return false;
+	
+	progressDialog->setLabelText("Reading Config");	//Set the progress dialog label
+	if( !do_config_read(prog, HexData) )
+		return false;
+	
+	//		std::cout << "Reading " << prog.get_eeprom_size() << " EEPROM bytes\n";
+	progressDialog->setLabelText("Reading EEPROM");	//Set the progress dialog label
+	if( !do_eeprom_read(prog, HexData) )
+		return false;
+	
+	return true;
+}
+
+bool CentralWidget::doProgrammerInit(kitsrus::kitsrus_t& prog)
+{
+	if( !prog.open() )			//Open the port
+	{
+		QMessageBox::critical(this, "Error", "Could not open serial port");
+		return false;
+	}
+	
+	if( !do_reset(prog) )			//Reset the programmer
+		return false;
+	
+	//Check the protocol version
+	std::string protocol = prog.get_protocol();
+	if( protocol != "P018" )
+	{
+		QMessageBox::critical(this, "Error", tr("Wrong protocol version ( %1 )").arg(QString(protocol.c_str())));
+		return false;
+	}
+	
+	prog.init_program_vars();	//Initialize programming variables
+	
+	prog.set_callback(&handle_progress, this);	//Set the progress callback
+	
+	return true;
+}
+
 void CentralWidget::program_all()
 {
 	chipinfo::chipinfo	chip_info;
@@ -355,46 +423,35 @@ void CentralWidget::program_all()
 		QString	path(currentPath());
 		kitsrus::kitsrus_t	prog(path, chip_info);	//Programmer interface
 		intelhex::hex_data HexData(file_name.toStdString());	//Load the hex file
+
+		if( !doProgrammerInit(prog) )
+			return;
 		
-		if( !prog.open() )			//Open the port
+		if( !do_write_all(prog, HexData, EraseCheckBox->isChecked(), progressDialog) )
 		{
-			QMessageBox::critical(this, "Error", "Could not open serial port");
+			progressDialog->reset();
+			QMessageBox::critical(this, "Error", tr("Error writing to chip"));
 			return;
 		}
-
-		if( !do_reset(prog) )			//Reset the programmer
-			return;
-
-		//Check the protocol version
-		std::string protocol = prog.get_protocol();
-		if( protocol != "P018" )
+		
+		if( VerifyCheckBox->isChecked() )
 		{
-			QMessageBox::critical(this, "Error", tr("Wrong protocol version ( %1 )").arg(QString(protocol.c_str())));
-			return;
+			if( !doProgrammerInit(prog) )
+				return;
+
+			intelhex::hex_data VerifyData;
+			if( !do_read_all(prog, VerifyData, progressDialog) )
+			{
+				progressDialog->reset();
+				QMessageBox::critical(this, "Error", tr("Error reading chip"));
+			}
+			
+			if(intelhex::compare(HexData, VerifyData) )
+				QMessageBox::information(this, "Verify Results", "Pass");
+			else
+				QMessageBox::information(this, "Verify Results", "Fail");
 		}
-
-		prog.init_program_vars();	//Initialize programming variables
-		//If erase before programming...
-		if( EraseCheckBox->isChecked() )
-			do_erase(prog);
-
-		prog.set_callback(&handle_progress, this);	//Set the progress callback
-
-		//Do the programming sequence
-		//	For some reason config has to be written first or the programmer locks up
-		progressDialog->setLabelText("Writing Config");	//Set the progress dialog label
-		if( !do_config_write(prog, HexData) )
-			return;
-		
-		progressDialog->setLabelText("Writing EEPROM");	//Set the progress dialog label
-		if( !do_eeprom_write(prog, HexData) )
-			return;
-		
-		progressDialog->setLabelText("Writing ROM");	//Set the progress dialog label
-		do_rom_write(prog, HexData);					//Write the ROM words
 	}
-
-//	QMessageBox::information(this, "Program all", "Programming All");
 }
 
 void CentralWidget::read()
@@ -412,40 +469,15 @@ void CentralWidget::read()
 	{
 		kitsrus::kitsrus_t	prog(path, chip_info);	//Programmer interface
 		
-		if( !prog.open() )			//Open the port
+		if( !doProgrammerInit(prog) )
+			return;
+
+		if( !do_read_all(prog, HexData, progressDialog) )
 		{
-			QMessageBox::critical(this, "Error", "Could not open serial port");
-			return;
+			progressDialog->reset();
+			QMessageBox::critical(this, "Error", tr("Error reading chip"));
 		}
-		if( !do_reset(prog) )			//Reset the programmer
-			return;
-		
-		//Check the protocol version
-		std::string protocol = prog.get_protocol();
-		if( protocol != "P018" )
-		{
-			QMessageBox::critical(this, "Error", tr("Wrong protocol version ( %1 )").arg(QString(protocol.c_str())));
-			return;
-		}
-
-		prog.set_callback(&handle_progress, this);	//Set the progress callback
-		prog.init_program_vars();	//Initialize programming variables
-
-//		std::cout << "Reading " << prog.get_rom_size() << " ROM words\n";
-		progressDialog->setLabelText("Reading ROM");	//Set the progress dialog label
-		if( !do_rom_read(prog, HexData) )
-			return;
-		
-		progressDialog->setLabelText("Reading Config");	//Set the progress dialog label
-		if( !do_config_read(prog, HexData) )
-			return;
-
-//		std::cout << "Reading " << prog.get_eeprom_size() << " EEPROM bytes\n";
-		progressDialog->setLabelText("Reading EEPROM");	//Set the progress dialog label
-		if( !do_eeprom_read(prog, HexData) )
-			return;
 	}
-//	std::cout << "Read " << HexData.size() << " words from " << target.toStdString() << " into " << std::endl;
 
 	QString out_file(QFileDialog::getSaveFileName(this));
 	if( !out_file.isEmpty() )
