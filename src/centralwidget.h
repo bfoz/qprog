@@ -40,6 +40,9 @@ private slots:
 	void onTargetComboChange(const QString &);
 	void onDeviceComboChange(const QString &);
 	void browse();
+#ifdef	Q_OS_LINUX
+	void device_browse();
+#endif	//Q_OS_LINUX
 
 	void program_all();
 	void read();

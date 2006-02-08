@@ -4,6 +4,7 @@ Version 0.3
 -Verify after program enabled
 -Browse button opens directory of previously selected file, if any
 -Verify button is enabled and functioning
+-Programmer device node must be selected manually in Linux version
 
 Version 0.2.1 - January 29, 2006
 -Bugfix release for Windows platform issues
