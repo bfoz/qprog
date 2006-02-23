@@ -17,6 +17,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QProgressDialog>
+#include <QSettings>
 
 #include	"kitsrus.h"
 
@@ -63,6 +64,8 @@ private:
 	QCheckBox	*NewWindowOnReadCheckBox;
 	QCheckBox	*ProgramOnFileChangeCheckBox;
 	QProgressDialog *progressDialog;
+
+	QSettings	settings;
 
 	bool FillPortCombo();
 	

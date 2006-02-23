@@ -108,7 +108,6 @@ CentralWidget::CentralWidget() : QWidget()
 	FillTargetCombo();		//Fill target device list from settings
 
 	//Set the device combo to the last used port
-	QSettings settings;
 	QString last_device = settings.value("CentralWidget/DeviceCombo/Last/Text").toString();
 	int j=0;
 	if( !last_device.isEmpty() )
@@ -136,25 +135,21 @@ CentralWidget::CentralWidget() : QWidget()
 
 void CentralWidget::onEraseCheckBoxChange(int state)
 {
-	QSettings settings;
 	settings.setValue("CentralWidget/EraseBeforeProgrammingCheckBox/checkState", state);
 }
 
 void CentralWidget::onVerifyCheckBoxChange(int state)
 {
-	QSettings settings;
 	settings.setValue("CentralWidget/VerifyAfterProgrammingCheckBox/checkState", state);
 }
 
 void CentralWidget::onNewWindowOnReadCheckBoxChange(int state)
 {
-	QSettings settings;
 	settings.setValue("CentralWidget/NewWindowOnReadCheckBox/checkState", state);
 }
 
 void CentralWidget::onProgramOnFileChangeCheckBoxChange(int state)
 {
-	QSettings settings;
 	settings.setValue("CentralWidget/ProgramOnFileChangeCheckBox/checkState", state);
 }
 
@@ -162,7 +157,6 @@ bool CentralWidget::FillTargetCombo()
 {
 	TargetType->clear();
 	
-	QSettings settings;
 	settings.beginGroup("PartsDB");
 	QStringList keys = settings.childGroups();
 	settings.endGroup();
@@ -184,13 +178,11 @@ bool CentralWidget::FillTargetCombo()
 
 void CentralWidget::onTargetComboChange(const QString &text)
 {
-	QSettings settings;
 	settings.setValue("CentralWidget/TargetCombo/Last/Text", text);
 }
 
 void CentralWidget::onDeviceComboChange(const QString &text)
 {
-	QSettings settings;
 	settings.setValue("CentralWidget/DeviceCombo/Last/Text", text);
 }
 
@@ -211,7 +203,6 @@ void CentralWidget::browse()
 		FileName->setCurrentIndex(FileName->count() - 1);
 
 		//Save the new file list to settings
-		QSettings settings;
 		settings.beginWriteArray("CentralWidget/FileName/Last");
 		for(int i = 0; i < FileName->count(); ++i)
 		{
@@ -241,7 +232,6 @@ void CentralWidget::device_browse()
 		ProgrammerDeviceNode->clear();
 		ProgrammerDeviceNode->addItem(str, QVariant(directory));
 
-		QSettings settings;
 		settings.setValue("CentralWidget/DeviceCombo/Last/Text", directory);
 	}	
 }
