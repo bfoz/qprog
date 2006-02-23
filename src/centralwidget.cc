@@ -17,13 +17,11 @@
 #include <QStringList>
 
 #ifdef	Q_OS_DARWIN
+#include <sstream>
 
-#include <Kernel/mach/std_types.h>
-#include <IOKit/IOTypes.h>
-#include <CoreFoundation/CoreFoundation.h>
+#include <Carbon/Carbon.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/serial/IOSerialKeys.h>
-#include <IOKit/IOBSD.h>
 
 #endif	//Q_OS_DARWIN
 
@@ -47,7 +45,6 @@ CentralWidget::CentralWidget() : QWidget()
 	EraseCheckBox = new QCheckBox("Erase before programming");
 	VerifyCheckBox = new QCheckBox("Verify after programming");
 	NewWindowOnReadCheckBox = new QCheckBox("Open new window on read");
-	NewWindowOnReadCheckBox->setEnabled(false);
 	ProgramOnFileChangeCheckBox = new QCheckBox("Reprogram on file change");
 	ProgramOnFileChangeCheckBox->setEnabled(false);
 
@@ -493,6 +490,63 @@ void CentralWidget::program_all()
 	}
 }
 
+#ifdef	Q_OS_DARWIN
+void handle_open_new_text(intelhex::hex_data& HexData)
+{
+	OSErr err = noErr;
+	FSRef	ref;
+	LSApplicationParameters	app_parms = {0, kLSLaunchNoParams, &ref, NULL, NULL, NULL, NULL};
+	ProcessSerialNumber	psn;
+	AppleEvent openEvent, createEvent, replyEvent;
+	AEDesc	docSpec, insertLoc;
+	std::ostringstream text;
+
+	//Find the preferred application for text files
+	if( LSGetApplicationForInfo('TEXT', kLSUnknownCreator, NULL, kLSRolesAll, &ref, NULL) != noErr )
+		std::cout << "Error\n";
+	LSOpenApplication(&app_parms, &psn);	//Launch the application
+
+	HexData.write(text);
+//	std::cout << "text => " << text.str() << std::endl;
+
+	//Build an event to open a new document
+	err = AEBuildAppleEvent(kAECoreSuite, kAECreateElement, typeProcessSerialNumber, &psn, sizeof(psn), kAutoGenerateReturnID, kAnyTransactionID, &createEvent, NULL, "kocl:type(docu)");
+/*	Handle pretty_handle;
+	err = AEPrintDescToHandle(&createEvent, &pretty_handle);
+	if( err == noErr )
+		printf("event: %s\n", *pretty_handle);
+	else
+		printf("bad pretty print %d\n", err);
+*/
+	//Send an Apple Event to open a new document
+	err = AESendMessage(&createEvent, &replyEvent, kAEWaitReply, kAEDefaultTimeout);
+	if( err != noErr )
+		std::cout << "Error sending create event " << err << "\n";
+	AEGetParamDesc(&replyEvent, keyDirectObject, typeWildCard, &docSpec);
+
+	//Build an Apple Event to send the text to the editor
+	err = AEBuildAppleEvent(kAECoreSuite, kAECreateElement, typeProcessSerialNumber, &psn, sizeof(psn), kAutoGenerateReturnID, kAnyTransactionID, &openEvent, NULL, "kocl:type(cpar), data:TEXT(@)", text.str().c_str());
+//	AEPutAttributeDesc(&openEvent, keySubjectAttr, &docSpec);	//Add the doc spec as an attribute
+	AEBuildDesc(&insertLoc, NULL, "insl{kobj:@, kpos:end}", &docSpec);	//Make an insert location
+	AEPutParamDesc(&openEvent, keyAEInsertHere, &insertLoc);	//Insert the insert location
+	
+	if( err != aeBuildSyntaxNoErr )
+		std::cout << "Error building event " << err << "\n";
+
+	//Send an Apple Event to append the new text
+	err = AESendMessage(&openEvent, NULL, kAENoReply, kAEDefaultTimeout);
+	if( err != noErr )
+		std::cout << "Error sending event " << err << "\n";
+	
+	//Cleanup
+	AEDisposeDesc(&docSpec);
+	AEDisposeDesc(&insertLoc);
+	AEDisposeDesc(&openEvent);
+	AEDisposeDesc(&createEvent);
+	AEDisposeDesc(&replyEvent);
+}
+#endif	//Q_OS_DARWIN
+
 void CentralWidget::read()
 {
 	chipinfo::chipinfo	chip_info;
@@ -503,7 +557,7 @@ void CentralWidget::read()
 	loadChipInfo(target, chip_info);	//Load the chip info from the settings
 
 	QString	path(ProgrammerDeviceNode->itemData(ProgrammerDeviceNode->currentIndex()).toString());
-	
+
 	//Put this in a block to close the serial port early
 	{
 		kitsrus::kitsrus_t	prog(path, chip_info);	//Programmer interface
@@ -518,12 +572,22 @@ void CentralWidget::read()
 		}
 	}
 
-	QString out_file(QFileDialog::getSaveFileName(this));
-	if( !out_file.isEmpty() )
-		HexData.write(out_file.toStdString().c_str());
+
+#ifdef	Q_OS_DARWIN
+	if( NewWindowOnReadCheckBox->isChecked() )
+		handle_open_new_text(HexData);
+	else
+	{
+#endif	//Q_OS_DARWIN
+		QString out_file(QFileDialog::getSaveFileName(this));
+		if( !out_file.isEmpty() )
+			HexData.write(out_file.toStdString().c_str());
+#ifdef	Q_OS_DARWIN
+	}
+#endif	//Q_OS_DARWIN
 }
 
-void CentralWidget::verify()
+void CentralWidget::onVerify()
 {
 	chipinfo::chipinfo	chip_info;
 	QString	target(TargetType->itemText(TargetType->currentIndex()));

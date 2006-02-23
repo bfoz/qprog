@@ -47,7 +47,7 @@ private slots:
 	void program_all();
 	void read();
 	void bulk_erase();
-	void verify();
+	void onVerify();
 
 private:
 	QComboBox	*FileName;
