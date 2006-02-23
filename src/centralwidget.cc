@@ -48,6 +48,12 @@ CentralWidget::CentralWidget() : QWidget()
 	ProgramOnFileChangeCheckBox = new QCheckBox("Reprogram on file change");
 	ProgramOnFileChangeCheckBox->setEnabled(false);
 
+	//Connect the checkbox change signals so the state changes can be saved to settings
+	connect(EraseCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onEraseCheckBoxChange(int)));
+	connect(VerifyCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onVerifyCheckBoxChange(int)));
+	connect(NewWindowOnReadCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onNewWindowOnReadCheckBoxChange(int)));
+	connect(ProgramOnFileChangeCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onProgramOnFileChangeCheckBoxChange(int)));
+
 	QPushButton	*ProgramButton = new QPushButton("Program");
 	QPushButton	*ReadButton = new QPushButton("Read");
 	QPushButton	*VerifyButton = new QPushButton("Verify");
@@ -109,6 +115,12 @@ CentralWidget::CentralWidget() : QWidget()
 		if( (j = ProgrammerDeviceNode->findText(last_device)) != -1 )
 			ProgrammerDeviceNode->setCurrentIndex(j);
 	
+	//Restore the checkbox states from settings
+	EraseCheckBox->setCheckState((Qt::CheckState)settings.value("CentralWidget/EraseBeforeProgrammingCheckBox/checkState").toInt());
+	VerifyCheckBox->setCheckState((Qt::CheckState)settings.value("CentralWidget/VerifyAfterProgrammingCheckBox/checkState").toInt());
+	NewWindowOnReadCheckBox->setCheckState((Qt::CheckState)settings.value("CentralWidget/NewWindowOnReadCheckBox/checkState").toInt());
+	ProgramOnFileChangeCheckBox->setCheckState((Qt::CheckState)settings.value("CentralWidget/ProgramOnFileChangeCheckBox/checkState").toInt());
+
 	//Restore the file list from settings
 	j = settings.beginReadArray("CentralWidget/FileName/Last");
 	for(int i = 0; i < j; ++i)
@@ -120,6 +132,30 @@ CentralWidget::CentralWidget() : QWidget()
 	
 	progressDialog = new QProgressDialog(this);
 	progressDialog->setModal(true);
+}
+
+void CentralWidget::onEraseCheckBoxChange(int state)
+{
+	QSettings settings;
+	settings.setValue("CentralWidget/EraseBeforeProgrammingCheckBox/checkState", state);
+}
+
+void CentralWidget::onVerifyCheckBoxChange(int state)
+{
+	QSettings settings;
+	settings.setValue("CentralWidget/VerifyAfterProgrammingCheckBox/checkState", state);
+}
+
+void CentralWidget::onNewWindowOnReadCheckBoxChange(int state)
+{
+	QSettings settings;
+	settings.setValue("CentralWidget/NewWindowOnReadCheckBox/checkState", state);
+}
+
+void CentralWidget::onProgramOnFileChangeCheckBoxChange(int state)
+{
+	QSettings settings;
+	settings.setValue("CentralWidget/ProgramOnFileChangeCheckBox/checkState", state);
 }
 
 bool CentralWidget::FillTargetCombo()

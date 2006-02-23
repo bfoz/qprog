@@ -37,6 +37,10 @@ public:
 	}
 
 private slots:
+	void onEraseCheckBoxChange(int);
+	void onVerifyCheckBoxChange(int);
+	void onNewWindowOnReadCheckBoxChange(int);
+	void onProgramOnFileChangeCheckBoxChange(int);
 	void onTargetComboChange(const QString &);
 	void onDeviceComboChange(const QString &);
 	void browse();
