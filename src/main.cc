@@ -5,6 +5,8 @@
 	Created December 17, 2005 by Brandon Fosdick
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
+
+	$Id: main.cc,v 1.2 2007/06/17 05:03:20 bfoz Exp $
 */
 
 #include<QApplication>

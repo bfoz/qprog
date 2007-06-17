@@ -7,6 +7,8 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
+
+	$Id: intelhex.cc,v 1.3 2007/06/17 05:03:19 bfoz Exp $
  * */
 
 #include <iostream>
