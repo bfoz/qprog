@@ -24,7 +24,7 @@ MainWindow::MainWindow() : buffer(NULL)
 	setCentralWidget(new CentralWidget());
 	
 	QAction	*updateInfoAct = new QAction(QString("Update"), this);
-	updateInfoAct->setStatusTip(tr("Update the Chip Info"));
+	updateInfoAct->setStatusTip(tr("Update the Device Info"));
 	connect(updateInfoAct, SIGNAL(triggered()), this, SLOT(updateChipInfo()));
 
 	QAction *aboutAction = new QAction("About", this);
@@ -35,9 +35,9 @@ MainWindow::MainWindow() : buffer(NULL)
 //	QMenu	*fileMenu = menuBar()->addMenu(tr("&File"));
 #endif
 
-	QMenu *chipinfoMenu = menuBar()->addMenu("Chip Info");
-	chipinfoMenu->addAction("Update", this, SLOT(updateChipInfo()))->setStatusTip("Update the Chip Info");
-	chipinfoMenu->addAction("Update From File", this, SLOT(updateChipInfoFromFile()))->setStatusTip("Update the Chip Info from a file");
+	QMenu *chipinfoMenu = menuBar()->addMenu("Device Info");
+	chipinfoMenu->addAction("Update", this, SLOT(updateChipInfo()))->setStatusTip("Update the Device Info");
+	chipinfoMenu->addAction("Update From File", this, SLOT(updateChipInfoFromFile()))->setStatusTip("Update the Device Info from a file");
 
 //	chipinfoMenu->addAction(updateInfoAct);
 //	menuBar()->addAction("About", this, SLOT(handleAbout()));
@@ -67,7 +67,7 @@ MainWindow::MainWindow() : buffer(NULL)
 
 void MainWindow::handleAbout()
 {
-	QMessageBox::about(this, "<center><b>QProg</b></center>", "<center>&copy; 2005-2006 Brandon Fosdick<br><a href=\"http://www.opensource.org/licenses/bsd-license.php\">BSD License</a><br><br>http://bfoz.net/projects/qprog/</center>");
+	QMessageBox::about(this, "<center><b>QProg</b></center>", "<center>&copy; 2005-2007 Brandon Fosdick<br><a href=\"http://www.opensource.org/licenses/bsd-license.php\">BSD License</a><br><br><a href=\"http://bfoz.net/projects/qprog/\">http://bfoz.net/projects/qprog/</a></center>");
 }
 
 /*	Update the chip info stored in the settings
