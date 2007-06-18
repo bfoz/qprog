@@ -1,12 +1,12 @@
 /*	Filename:	main.cc
-	Main file for QtProg
+	Main file for QProg
 	Interface for DIY PIC programmer hardware
 	
 	Created December 17, 2005 by Brandon Fosdick
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: main.cc,v 1.2 2007/06/17 05:03:20 bfoz Exp $
+	$Id: main.cc,v 1.3 2007/06/18 00:00:00 bfoz Exp $
 */
 
 #include<QApplication>
@@ -17,10 +17,10 @@ int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
 
-	//These need to be set before QtProg is constructed
+	//These need to be set before QProg is constructed
 	QCoreApplication::setOrganizationName("bfoz");
 	QCoreApplication::setOrganizationDomain("bfoz.net");
-	QCoreApplication::setApplicationName("QtProg");
+	QCoreApplication::setApplicationName("QProg");
 
 	MainWindow mainwin;
 	
