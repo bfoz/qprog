@@ -65,7 +65,7 @@
 #define E_WRITE_FAILED              14
 
 /*enums for port settings*/
-typedef enum _NamingConvention {
+enum NamingConvention {
     WIN_NAMES,
     IRIX_NAMES,
     HPUX_NAMES,
@@ -73,9 +73,9 @@ typedef enum _NamingConvention {
     DIGITAL_NAMES,
     FREEBSD_NAMES,
     LINUX_NAMES
-} NamingConvention;
+};
 
-typedef enum _BaudRateType {
+enum BaudRateType {
     BAUD50,                //POSIX ONLY
     BAUD75,                //POSIX ONLY
     BAUD110,
@@ -98,37 +98,37 @@ typedef enum _BaudRateType {
     BAUD115200,
     BAUD128000,            //WINDOWS ONLY
     BAUD256000             //WINDOWS ONLY
-} BaudRateType;
+};
 
-typedef enum _DataBitsType {
+enum DataBitsType {
     DATA_5,
     DATA_6,
     DATA_7,
     DATA_8
-} DataBitsType;
+};
 
-typedef enum _ParityType {
+enum ParityType {
     PAR_NONE,
     PAR_ODD,
     PAR_EVEN,
     PAR_MARK,               //WINDOWS ONLY
     PAR_SPACE
-} ParityType;
+};
 
-typedef enum _StopBitsType {
+enum StopBitsType {
     STOP_1,
     STOP_1_5,               //WINDOWS ONLY
     STOP_2
-} StopBitsType;
+};
 
-typedef enum _FlowType {
+enum FlowType {
     FLOW_OFF,
     FLOW_HARDWARE,
     FLOW_XONXOFF
-} FlowType;
+};
 
 /*structure to contain port settings*/
-typedef struct _PortSettings {
+struct PortSettings {
     BaudRateType BaudRate;
     DataBitsType DataBits;
     ParityType Parity;
@@ -136,9 +136,9 @@ typedef struct _PortSettings {
     FlowType FlowControl;
     ulong Timeout_Sec;
     ulong Timeout_Millisec;
-} PortSettings;
+};
 
-class QextSerialBase:public QIODevice {
+class QextSerialBase : public QIODevice {
 public:
     QextSerialBase();
     QextSerialBase(const QString & name);
@@ -160,13 +160,16 @@ public:
     virtual void setTimeout(ulong, ulong)=0;
 
     virtual bool open(OpenMode mode=0)=0;
-    virtual bool isOpen() const;
+    virtual bool isSequential() const;
     virtual void close()=0;
     virtual void flush()=0;
 
     virtual qint64 size() const=0;
     virtual qint64 bytesAvailable()=0;
     virtual bool atEnd() const;
+
+    virtual void ungetChar(char c)=0;
+    virtual qint64 readLine(char * data, qint64 maxSize);
 
     virtual ulong lastError() const;
     virtual void translateError(ulong error)=0;
@@ -175,12 +178,8 @@ public:
     virtual void setRts(bool set=true)=0;
     virtual ulong lineStatus()=0;
 
-    virtual qint64 readData(char * data, qint64 maxSize)=0;
-    virtual qint64 writeData(const char * data, qint64 maxSize)=0;
-
 protected:
     QString port;
-    bool portOpen;
     PortSettings Settings;
     ulong lastErr;
 
@@ -188,6 +187,10 @@ protected:
     static QMutex* mutex;
     static ulong refCount;
 #endif
+
+    virtual qint64 readData(char * data, qint64 maxSize)=0;
+    virtual qint64 writeData(const char * data, qint64 maxSize)=0;
+
 };
 
 #endif

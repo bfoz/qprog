@@ -13,16 +13,16 @@
 class Win_QextSerialPort:public QextSerialBase {
 public:
     Win_QextSerialPort();
+    Win_QextSerialPort(Win_QextSerialPort const& s);
     Win_QextSerialPort(const QString & name);
     Win_QextSerialPort(const PortSettings& settings);
     Win_QextSerialPort(const QString & name, const PortSettings& settings);
+    Win_QextSerialPort& operator=(const Win_QextSerialPort& s);
     virtual ~Win_QextSerialPort();
     virtual bool open(OpenMode mode=0);
     virtual void close();
     virtual void flush();
     virtual qint64 size() const;
-    virtual bool getChar(char * c);
-    virtual bool putChar(char c);
     virtual void ungetChar(char c);
     virtual void setFlowControl(FlowType);
     virtual void setParity(ParityType);
@@ -35,17 +35,14 @@ public:
     virtual qint64 bytesAvailable();
     virtual void translateError(ulong);
     virtual void setTimeout(ulong, ulong);
-    virtual qint64 readData(char *data, qint64 maxSize);
-    virtual qint64 writeData(const char *data, qint64 maxSize);
-
-private:
-    Win_QextSerialPort(Win_QextSerialPort const&) {}
-    Win_QextSerialPort& operator=(const Win_QextSerialPort&) {}
 
 protected:
     HANDLE Win_Handle;
     COMMCONFIG Win_CommConfig;
     COMMTIMEOUTS Win_CommTimeouts;
+
+    virtual qint64 readData(char *data, qint64 maxSize);
+    virtual qint64 writeData(const char *data, qint64 maxSize);
 };
 
 #endif

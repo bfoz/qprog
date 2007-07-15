@@ -96,7 +96,7 @@ void QextSerialBase::construct()
     refCount++;
 #endif
 
-    portOpen=false;
+	setOpenMode(QIODevice::NotOpen);
 }
 
 /*!
@@ -168,12 +168,14 @@ FlowType QextSerialBase::flowControl() const
 }
 
 /*!
-\fn bool QextSerialBase::isOpen() const
-Returns true if the port associated with the class is currently open, or false if it is not.
+\fn bool QextSerialBase::isSequential() const
+Returns true if device is sequential, otherwise returns false. Serial port is sequential device
+so this function always returns true. Check QIODevice::isSequential() documentation for more 
+information.
 */
-bool QextSerialBase::isOpen() const
+bool QextSerialBase::isSequential() const
 {
-    return portOpen;
+	return true;
 }
 
 /*!
@@ -187,6 +189,33 @@ bool QextSerialBase::atEnd() const
         return true;
     }
     return false;
+}
+
+/*!
+\fn qint64 QextSerialBase::readLine(char * data, qint64 maxSize)
+This function will read a line of buffered input from the port, stopping when either maxSize bytes
+have been read, the port has no more data available, or a newline is encountered.
+The value returned is the length of the string that was read.
+*/
+qint64 QextSerialBase::readLine(char * data, qint64 maxSize)
+{
+    qint64 numBytes = bytesAvailable();
+    char* pData = data;
+
+	if (maxSize < 2)	//maxSize must be larger than 1
+		return -1;
+
+    /*read a byte at a time for MIN(bytesAvail, maxSize - 1) iterations, or until a newline*/
+    while (pData<(data+numBytes) && --maxSize) {
+        readData(pData, 1);
+        if (*pData++ == '\n') {
+            break;
+        }
+    }
+    *pData='\0';
+
+    /*return size of data read*/
+    return (pData-data);
 }
 
 /*!
