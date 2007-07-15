@@ -4,6 +4,7 @@
 
 TEMPLATE = app
 CONFIG	+= warn_on qt stl
+OBJECTS_DIR = obj
 macx {
 	TARGET = QProg
 	MOC_DIR = build
