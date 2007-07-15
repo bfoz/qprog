@@ -6,16 +6,21 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: main.cc,v 1.3 2007/06/18 00:00:00 bfoz Exp $
+	$Id: main.cc,v 1.4 2007/07/15 04:32:11 bfoz Exp $
 */
 
 #include<QApplication>
 
+#include "carbon_cocoa.h"
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
+
+#ifdef	Q_OS_DARWIN
+	Cocoa::initialize();
+#endif	//Q_OS_DARWIN
 
 	//These need to be set before QProg is constructed
 	QCoreApplication::setOrganizationName("bfoz");

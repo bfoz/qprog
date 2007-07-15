@@ -28,7 +28,17 @@ SOURCES	+= src/kitsrus.cc
 HEADERS	+= src/chipinfo.h
 SOURCES	+= src/chipinfo.cc
 
-macx:LIBS += -framework IOKit
+macx {
+	# Carbon-Cocoa interface for Sparkle
+	HEADERS += src/carbon_cocoa.h
+	SOURCES += src/carbon_cocoa.mm
+
+	LIBS += -framework IOKit -framework CoreServices
+	LIBS += -framework Sparkle -framework Carbon
+	CONFIG += ppc #x86 ppc
+	QMAKE_MAC_SDK=/Developer/SDKs/MacOSX10.4u.sdk
+	QMAKE_INFO_PLIST = Info.plist
+}
 
 # qextserialport stuff
 INCLUDEPATH += qextserialport
