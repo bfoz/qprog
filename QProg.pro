@@ -3,7 +3,7 @@
 ######################################################################
 
 TEMPLATE = app
-CONFIG	+= warn_on qt
+CONFIG	+= warn_on qt stl
 macx {
 	TARGET = QProg
 	MOC_DIR = build
