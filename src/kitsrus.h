@@ -8,7 +8,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: kitsrus.h,v 1.3 2007/06/17 05:03:20 bfoz Exp $
+	$Id: kitsrus.h,v 1.4 2007/07/16 00:07:11 bfoz Exp $
  * */
 
 #ifndef KITSRUS_H
@@ -83,13 +83,13 @@ namespace kitsrus
 				printf("write 0x%02X\n", (unsigned)c);
 #endif	//DEBUG
 			char d = c;
-			return com.writeData(&d, 1);
+			return com.write(&d, 1);
 		}
 
 		uint8_t	read()
 		{
 			char c;
-			if( com.readData(&c,1) != 1 )
+			if( com.read(&c,1) != 1 )
 				std::cout << "read error\n";
 #ifdef DEBUG
 			if( isalnum(c) )
@@ -132,7 +132,7 @@ public:
 		}
 		~kitsrus_t() { close(); }
 
-		bool	open()	{	if( com.open() ) { return true; } else return false;	}
+		bool	open()	{	return com.open(QIODevice::ReadWrite) ? true : false;	}
 		bool	command_mode();
 		bool	soft_reset();
 		bool	hard_reset();
