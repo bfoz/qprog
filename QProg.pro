@@ -5,10 +5,11 @@
 QPROG_VERSION = "0.4"
 TEMPLATE = app
 CONFIG	+= warn_on qt stl
-OBJECTS_DIR = obj
+
 macx {
 	TARGET = QProg
 	MOC_DIR = build
+	OBJECTS_DIR = obj
 } else:win32 {
 	TARGET = QProg
 	CONFIG += static			#Static link Qt libs
