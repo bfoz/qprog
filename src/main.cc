@@ -6,12 +6,15 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: main.cc,v 1.4 2007/07/15 04:32:11 bfoz Exp $
+	$Id: main.cc,v 1.5 2007/07/16 00:23:01 bfoz Exp $
 */
 
 #include<QApplication>
 
+#ifdef	Q_OS_DARWIN
 #include "carbon_cocoa.h"
+#endif	//Q_OS_DARWIN
+
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
