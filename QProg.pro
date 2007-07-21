@@ -41,7 +41,7 @@ macx {
 	CONFIG += ppc #x86 ppc
 	QMAKE_MAC_SDK=/Developer/SDKs/MacOSX10.4u.sdk
 	QMAKE_INFO_PLIST = Info.plist
-	QMAKE_POST_LINK = sed -i -e s/@@version@@/$${QPROG_VERSION}/g QProg.app/Contents/Info.plist
+	QMAKE_POST_LINK = "sed -e s/@@version@@/$${QPROG_VERSION}/g -i '' QProg.app/Contents/Info.plist"
 }
 
 # qextserialport stuff
