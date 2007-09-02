@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: mainwindow.cc,v 1.9 2007/09/02 23:44:01 bfoz Exp $
+	$Id: mainwindow.cc,v 1.10 2007/09/02 23:46:52 bfoz Exp $
 */
 
 #include <iostream>
@@ -105,7 +105,7 @@ void MainWindow::handleAbout()
 }
 
 /*	Update the device info stored in the settings
-		All device info is stored with a prefix of "PartsDB"
+		All device info is stored with a prefix of "DeviceInfo"
 */
 void MainWindow::updateDeviceInfo()
 {
