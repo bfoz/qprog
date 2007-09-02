@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: centralwidget.cc,v 1.14 2007/06/17 05:03:19 bfoz Exp $
+	$Id: centralwidget.cc,v 1.15 2007/09/02 23:56:07 bfoz Exp $
 */
 
 #include <iostream>
@@ -107,7 +107,6 @@ CentralWidget::CentralWidget() : QWidget()
 	setLayout(Layout0);
 
 	FillPortCombo();		//Fill the programmer dropdown with the available ports
-	FillTargetCombo();		//Fill target device list from settings
 
 	//Set the device combo to the last used port
 	QString last_device = settings.value("CentralWidget/DeviceCombo/Last/Text").toString();
@@ -158,15 +157,36 @@ void CentralWidget::onProgramOnFileChangeCheckBoxChange(int state)
 bool CentralWidget::FillTargetCombo()
 {
 	TargetType->clear();
-	
-	settings.beginGroup("PartsDB");
-	QStringList keys = settings.childGroups();
+
+	QSettings	settings;
+	if( !settings.childGroups().contains("DeviceInfo") )
+	{
+		QMessageBox::information(this, tr(""), tr("No Device Info"));
+		return false;
+	}
+
+	settings.beginGroup("DeviceInfo");
+
+	if( !settings.childGroups().contains("Devices") )
+	{
+		QMessageBox::information(this, tr(""), tr("No Devices"));
+		return false;
+	}
+
+	size_t numDevices = settings.beginReadArray("Devices");
+	QStringList devices = settings.childGroups();
+	numDevices = devices.count();	// Rude hack to deal with QSettings bug
+
+	for(size_t i=0; i<numDevices; ++i)
+	{
+		settings.setArrayIndex(i);
+		QVariant n = settings.value("Name");
+		if( n.isValid() && (n.toString().length()!=0) )
+			TargetType->addItem(n.toString(), (unsigned)i);
+	}
+	settings.endArray();
 	settings.endGroup();
 //	printf("Filling target combo with %d keys\n", keys.count());
-
-	QStringListIterator i(keys);
-	while(i.hasNext())
-		TargetType->addItem(i.next());
 
 	//Set the combo to the last used target
 	QString last_target = settings.value("CentralWidget/TargetCombo/Last/Text").toString();
