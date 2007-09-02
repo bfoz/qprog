@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: main.cc,v 1.5 2007/07/16 00:23:01 bfoz Exp $
+	$Id: main.cc,v 1.6 2007/09/02 23:06:06 bfoz Exp $
 */
 
 #include<QApplication>
@@ -31,7 +31,10 @@ int main(int argc, char *argv[])
 	QCoreApplication::setApplicationName("QProg");
 
 	MainWindow mainwin;
-	
+
+	// Post a startup event to the main window
+	app.postEvent(&mainwin, new QEvent((QEvent::Type)MainWindow::Startup), Qt::LowEventPriority);
+
 	mainwin.show();
 	return app.exec();
 }

@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: mainwindow.cc,v 1.5 2007/09/02 22:38:31 bfoz Exp $
+	$Id: mainwindow.cc,v 1.6 2007/09/02 23:06:06 bfoz Exp $
 */
 
 #include <iostream>
@@ -65,6 +65,18 @@ MainWindow::MainWindow() : buffer(NULL)
 	if( !settings.childGroups().contains("chipinfo") )
 		QMessageBox::warning(this, "No Chip Info", "QtProg requires a set of chip information records to continue.\n\nWould you like to download them now?", tr("&Yes"), tr("&No"), 0, 0, 1);
 */
+}
+
+void MainWindow::customEvent(QEvent* e)
+{
+	if( e->type() == (QEvent::Type)Startup )
+		startup();
+	else
+		QMainWindow::customEvent(e);
+}
+
+void MainWindow::startup()
+{
 }
 
 void MainWindow::handleAbout()

@@ -6,13 +6,14 @@
 	
 	Copyright 2006 Brandon Fosdick (BSD License)
 
-	$Id: mainwindow.h,v 1.4 2007/09/02 22:56:54 bfoz Exp $
+	$Id: mainwindow.h,v 1.5 2007/09/02 23:06:06 bfoz Exp $
 */
 
 #ifndef	MAINWINDOW_H
 #define	MAINWINDOW_H
 
 #include <QBuffer>
+#include <QEvent>
 #include <QHttp>
 #include <QMainWindow>
 #include <QProgressDialog>
@@ -21,7 +22,12 @@ class MainWindow : public QMainWindow
 {
 	Q_OBJECT
 public:
+	enum { Startup = QEvent::User }; 
+
 	MainWindow();
+
+protected:
+	virtual void customEvent(QEvent*);
 
 private slots:
 	void handleAbout();
@@ -38,6 +44,8 @@ private:
 	QProgressDialog *progressDialog;
 	bool httpRequestAborted;
 	int httpGetId;
+
+	void startup();
 };
 
 #endif	//MAINWINDOW_H
