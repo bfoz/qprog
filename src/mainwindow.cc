@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: mainwindow.cc,v 1.8 2007/09/02 23:42:06 bfoz Exp $
+	$Id: mainwindow.cc,v 1.9 2007/09/02 23:44:01 bfoz Exp $
 */
 
 #include <iostream>
@@ -222,7 +222,9 @@ void MainWindow::updateDeviceInfoFromFile()
 		}
 		else
 		{
-			QSettings	settings;
+			// Store the device info at the system level so the user can make
+			//  changes without corrupting the local copy of the database.
+			QSettings	settings(QSettings::SystemScope, "bfoz.net", "QProg");
 			QTextStream in(&file);
 			while(!in.atEnd())
 			{
