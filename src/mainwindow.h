@@ -6,7 +6,7 @@
 	
 	Copyright 2006 Brandon Fosdick (BSD License)
 
-	$Id: mainwindow.h,v 1.3 2007/06/17 16:52:28 bfoz Exp $
+	$Id: mainwindow.h,v 1.4 2007/09/02 22:56:54 bfoz Exp $
 */
 
 #ifndef	MAINWINDOW_H
@@ -25,12 +25,12 @@ public:
 
 private slots:
 	void handleAbout();
-	void updateChipInfo();
+	void updateDeviceInfo();
 	void cancelDownload();
 	void httpRequestFinished(int, bool);
 	void readResponseHeader(const QHttpResponseHeader &);
 	void updateDataReadProgress(int, int);
-	void updateChipInfoFromFile();
+	void updateDeviceInfoFromFile();
 
 private:
 	QBuffer	*buffer;

@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: mainwindow.cc,v 1.4 2007/06/17 05:03:20 bfoz Exp $
+	$Id: mainwindow.cc,v 1.5 2007/09/02 22:38:31 bfoz Exp $
 */
 
 #include <iostream>
@@ -27,7 +27,7 @@ MainWindow::MainWindow() : buffer(NULL)
 	
 	QAction	*updateInfoAct = new QAction(QString("Update"), this);
 	updateInfoAct->setStatusTip(tr("Update the Device Info"));
-	connect(updateInfoAct, SIGNAL(triggered()), this, SLOT(updateChipInfo()));
+	connect(updateInfoAct, SIGNAL(triggered()), this, SLOT(updateDeviceInfo()));
 
 	QAction *aboutAction = new QAction("About", this);
 	aboutAction->setStatusTip("About");
@@ -37,16 +37,16 @@ MainWindow::MainWindow() : buffer(NULL)
 //	QMenu	*fileMenu = menuBar()->addMenu(tr("&File"));
 #endif
 
-	QMenu *chipinfoMenu = menuBar()->addMenu("Device Info");
-	chipinfoMenu->addAction("Update", this, SLOT(updateChipInfo()))->setStatusTip("Update the Device Info");
-	chipinfoMenu->addAction("Update From File", this, SLOT(updateChipInfoFromFile()))->setStatusTip("Update the Device Info from a file");
+	QMenu *deviceInfoMenu = menuBar()->addMenu("Device Info");
+	deviceInfoMenu->addAction("Update", this, SLOT(updateDeviceInfo()))->setStatusTip("Update the Device Info");
+	deviceInfoMenu->addAction("Update From File", this, SLOT(updateDeviceInfoFromFile()))->setStatusTip("Update the Device Info from a file");
 
 //	chipinfoMenu->addAction(updateInfoAct);
 //	menuBar()->addAction("About", this, SLOT(handleAbout()));
 #ifdef	Q_OS_DARWIN
 	//On OSX the about menu needs to be nested so the automagic will work
-	//	so hide it in the chip info menu
-	chipinfoMenu->addAction(aboutAction);
+	//	so hide it in the device info menu
+	deviceInfoMenu->addAction(aboutAction);
 #else
 	menuBar()->addSeparator();
 	menuBar()->addMenu("&Help")->addAction(aboutAction);
@@ -72,10 +72,10 @@ void MainWindow::handleAbout()
 	QMessageBox::about(this, "<center><b>QProg</b></center>", "<center>&copy; 2005-2007 Brandon Fosdick<br><a href=\"http://www.opensource.org/licenses/bsd-license.php\">BSD License</a><br><br><a href=\"http://bfoz.net/projects/qprog/\">http://bfoz.net/projects/qprog/</a></center>");
 }
 
-/*	Update the chip info stored in the settings
-		All chip info is stored with a prefix of "PartsDB"
+/*	Update the device info stored in the settings
+		All device info is stored with a prefix of "PartsDB"
 */
-void MainWindow::updateChipInfo()
+void MainWindow::updateDeviceInfo()
 {
 	if(buffer != NULL)
 	{
@@ -87,7 +87,7 @@ void MainWindow::updateChipInfo()
 	http->setHost("bfoz.net");
 	httpGetId = http->get("/projects/pocket/PartsDB/export.php?format=extattr&noprefix=1", buffer);
 
-	progressDialog->setWindowTitle("Updating chip info");
+	progressDialog->setWindowTitle("Updating device info");
 	progressDialog->setCancelButtonText("Cancel");
 	progressDialog->setLabelText("Downloading");
 	progressDialog->setModal(true);
@@ -176,7 +176,7 @@ void MainWindow::updateDataReadProgress(int bytesRead, int totalBytes)
 	progressDialog->setValue(bytesRead);
 }
 
-void MainWindow::updateChipInfoFromFile()
+void MainWindow::updateDeviceInfoFromFile()
 {
 	QString filename = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath());
 	if( filename.size() != 0 )
@@ -184,7 +184,7 @@ void MainWindow::updateChipInfoFromFile()
 		QFile	file(filename);
 		if( !file.open(QIODevice::ReadOnly) )
 		{
-			QMessageBox::critical(0, "Error", "Could not open chip info file");
+			QMessageBox::critical(0, "Error", "Could not open device info file");
 		}
 		else
 		{
