@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: mainwindow.cc,v 1.7 2007/09/02 23:14:07 bfoz Exp $
+	$Id: mainwindow.cc,v 1.8 2007/09/02 23:42:06 bfoz Exp $
 */
 
 #include <iostream>
@@ -59,12 +59,6 @@ MainWindow::MainWindow() : buffer(NULL)
 	connect(http, SIGNAL(requestFinished(int, bool)), this, SLOT(httpRequestFinished(int, bool)));
 	connect(http, SIGNAL(responseHeaderReceived(const QHttpResponseHeader &)), this, SLOT(readResponseHeader(const QHttpResponseHeader &)));
 	connect(progressDialog, SIGNAL(canceled()), this, SLOT(cancelDownload()));
-
-	//See if the chip info exists and warn the user if it doesn't
-/*	QSettings settings;
-	if( !settings.childGroups().contains("chipinfo") )
-		QMessageBox::warning(this, "No Chip Info", "QtProg requires a set of chip information records to continue.\n\nWould you like to download them now?", tr("&Yes"), tr("&No"), 0, 0, 1);
-*/
 }
 
 void MainWindow::customEvent(QEvent* e)
@@ -77,6 +71,32 @@ void MainWindow::customEvent(QEvent* e)
 
 void MainWindow::startup()
 {
+	//Check for the old PartsDB entries and delete them if they exist
+	QSettings settings;
+	if( settings.childGroups().contains("PartsDB") )
+	{
+		int ret = QMessageBox::question(this, "Delete obsolete database?", "An old, incompatable, version of the device info database has been detected. Would you like to delete it?", QMessageBox::Yes | QMessageBox::No);
+		if( ret == QMessageBox::Yes )
+		{
+			settings.remove("PartsDB");
+			QMessageBox::information(this, "Deleted", "The old database has been deleted");
+		}
+	}
+
+	//See if the device info exists and warn the user if it doesn't
+	if( settings.childGroups().contains("DeviceInfo") )
+	{
+		//Load the target type combobox
+		static_cast<CentralWidget*>(centralWidget())->FillTargetCombo();
+	}
+	else
+	{
+		int ret = QMessageBox::question(this, "Download Device Info?", "You seem to be missing a Device Info database. Would you like to download one now?", QMessageBox::Yes | QMessageBox::No);
+		if( ret == QMessageBox::Yes )
+			updateDeviceInfo();
+		else
+			QMessageBox::information(this, "Okay...", "QProg won't work very well until you download a Device database. If you change your mind later you can select Update from the Device Info menu");
+	}
 }
 
 void MainWindow::handleAbout()
@@ -140,32 +160,33 @@ void MainWindow::httpRequestFinished(int requestId, bool error)
 	
 //	QMessageBox::information(this, tr("Download successful"), tr("%1 bytes read").arg(buffer->size()));
 //	printf("%s", buffer->data().data());
-	
-	QSettings	settings;
-	settings.beginGroup("PartsDB");
+
+	// Store the device info at the system level so the user can make
+	//  changes without corrupting the local copy of the database.
+	QSettings	settings(QSettings::SystemScope, "bfoz.net", "QProg");
+	// There's no need to beginGroup() here because the keys returned
+	//  by the server already have the group name included
+//	settings.beginGroup("DeviceInfo");
 	QTextStream in(buffer->data());
 	while(!in.atEnd())
 	{
-		QString key(in.readLine());
-		QString value(in.readLine());
-//		printf("%s\t=> %s\n", key.toStdString().c_str(), value.toStdString().c_str());
-		settings.setValue(key, value);
+		QString line(in.readLine());
+		if( line.contains('=') )
+		{
+			QStringList qsl = line.split('=');
+			settings.setValue(qsl.at(0), qsl.at(1));
+		}
 	}
-	settings.endGroup();
+//	settings.endGroup();
 	QMessageBox::information(this, tr("Download successful"), tr("%1 bytes read").arg(buffer->size()));
-
-/*	QStringList keys = settings.allKeys();
-	QStringListIterator i(keys);
-	while(i.hasNext())
-		std::cout << i.next().toStdString() << std::endl;
-*/
-	static_cast<CentralWidget*>(centralWidget())->FillTargetCombo();	//Force the target type combobox to be reloaded
 
 	if(buffer != NULL)
 	{
 		delete buffer;
 		buffer = NULL;
 	}
+
+	static_cast<CentralWidget*>(centralWidget())->FillTargetCombo();	//Force the target type combobox to be reloaded
 }
 
 void MainWindow::readResponseHeader(const QHttpResponseHeader &responseHeader)
@@ -202,16 +223,16 @@ void MainWindow::updateDeviceInfoFromFile()
 		else
 		{
 			QSettings	settings;
-			settings.beginGroup("PartsDB");
 			QTextStream in(&file);
 			while(!in.atEnd())
 			{
-				QString key(in.readLine());
-				QString value(in.readLine());
-		//		printf("%s\t=> %s\n", key.toStdString().c_str(), value.toStdString().c_str());
-				settings.setValue(key, value);
+				QString line(in.readLine());
+				if( line.contains('=') )
+				{
+					QStringList qsl = line.split('=');
+					settings.setValue(qsl.at(0), qsl.at(1));
+				}
 			}
-			settings.endGroup();
 			static_cast<CentralWidget*>(centralWidget())->FillTargetCombo();	//Force the target type combobox to be reloaded
 	
 			QMessageBox::information(this, tr("Update From File"), tr("Update"));
