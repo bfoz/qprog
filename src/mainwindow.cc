@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: mainwindow.cc,v 1.6 2007/09/02 23:06:06 bfoz Exp $
+	$Id: mainwindow.cc,v 1.7 2007/09/02 23:14:07 bfoz Exp $
 */
 
 #include <iostream>
@@ -96,13 +96,14 @@ void MainWindow::updateDeviceInfo()
 	}
 	buffer = new QBuffer;
 	
-	http->setHost("bfoz.net");
-	httpGetId = http->get("/projects/pocket/PartsDB/export.php?format=extattr&noprefix=1", buffer);
-
 	progressDialog->setWindowTitle("Updating device info");
 	progressDialog->setCancelButtonText("Cancel");
 	progressDialog->setLabelText("Downloading");
+	progressDialog->setMinimumDuration(0);
 	progressDialog->setModal(true);
+
+	http->setHost("bfoz.net");
+	httpGetId = http->get("/projects/qprog/api/?command=export", buffer);
 }
 
 void MainWindow::cancelDownload()
