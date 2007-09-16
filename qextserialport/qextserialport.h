@@ -19,11 +19,9 @@ public:
     QextSerialPort(const QString & name);
     QextSerialPort(PortSettings const& s);
     QextSerialPort(const QString & name, PortSettings const& s);
+    QextSerialPort(const QextSerialPort& s);
+    QextSerialPort& operator=(const QextSerialPort&);
     virtual ~QextSerialPort();
-
-private:
-    QextSerialPort(const QextSerialPort&) {}
-    QextSerialPort& operator=(const QextSerialPort&) {}
 };
 
 #endif

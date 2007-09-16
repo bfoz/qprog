@@ -48,6 +48,24 @@ Win_QextSerialPort::Win_QextSerialPort():QextSerialBase() {
     Win_Handle=INVALID_HANDLE_VALUE;
 }
 
+/*!Win_QextSerialPort::Win_QextSerialPort(const Win_QextSerialPort&)
+Copy constructor.
+*/
+Win_QextSerialPort::Win_QextSerialPort(const Win_QextSerialPort& s):QextSerialBase(s.port) {
+    Win_Handle=INVALID_HANDLE_VALUE;
+    portOpen=s.portOpen;
+    lastErr=s.lastErr;
+    port = s.port;
+    Settings.FlowControl=s.Settings.FlowControl;
+    Settings.Parity=s.Settings.Parity;
+    Settings.DataBits=s.Settings.DataBits;
+    Settings.StopBits=s.Settings.StopBits;
+    Settings.BaudRate=s.Settings.BaudRate;
+    Win_Handle=s.Win_Handle;
+    memcpy(&Win_CommConfig, &s.Win_CommConfig, sizeof(COMMCONFIG));
+    memcpy(&Win_CommTimeouts, &s.Win_CommTimeouts, sizeof(COMMTIMEOUTS));
+}
+
 /*!
 \fn Win_QextSerialPort::Win_QextSerialPort(const QString & name)
 Constructs a serial port attached to the port specified by devName.
@@ -95,6 +113,25 @@ Win_QextSerialPort::~Win_QextSerialPort() {
     if (portOpen) {
         close();
     }
+}
+
+/*!
+\fn Win_QextSerialPort& Win_QextSerialPort::operator=(const Win_QextSerialPort& s)
+overrides the = operator
+*/
+Win_QextSerialPort& Win_QextSerialPort::operator=(const Win_QextSerialPort& s) {
+    portOpen=s.isOpen();
+    lastErr=s.lastErr;
+    port = s.port;
+    Settings.FlowControl=s.Settings.FlowControl;
+    Settings.Parity=s.Settings.Parity;
+    Settings.DataBits=s.Settings.DataBits;
+    Settings.StopBits=s.Settings.StopBits;
+    Settings.BaudRate=s.Settings.BaudRate;
+    Win_Handle=s.Win_Handle;
+    memcpy(&Win_CommConfig, &s.Win_CommConfig, sizeof(COMMCONFIG));
+    memcpy(&Win_CommTimeouts, &s.Win_CommTimeouts, sizeof(COMMTIMEOUTS));
+    return *this;
 }
 
 /*!

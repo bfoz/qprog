@@ -168,6 +168,11 @@ public:
     virtual qint64 bytesAvailable()=0;
     virtual bool atEnd() const;
 
+    virtual bool getChar(char * c)=0;
+    virtual bool putChar(char c)=0;
+    virtual void ungetChar(char c)=0;
+    virtual qint64 readLine(char * data, qint64 maxSize);
+
     virtual ulong lastError() const;
     virtual void translateError(ulong error)=0;
 

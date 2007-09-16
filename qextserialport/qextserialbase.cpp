@@ -190,6 +190,35 @@ bool QextSerialBase::atEnd() const
 }
 
 /*!
+\fn qint64 QextSerialBase::readLine(char * data, qint64 maxSize)
+This function will read a line of buffered input from the port, stopping when either maxSize bytes
+have been read, the port has no more data available, or a newline is encountered.
+The value returned is the length of the string that was read.
+*/
+qint64 QextSerialBase::readLine(char * data, qint64 maxSize)
+{
+    qint64 numBytes = bytesAvailable();
+    char* pData = data;
+
+    /*if nothing waiting, return 0 length*/
+    if (numBytes<1) {
+        return 0;
+    }
+
+    /*read a byte at a time for MIN(bytesAvail, maxSize) iterations, or until a newline*/
+    while (pData<(data+numBytes) && --maxSize) {
+        readData(pData, 1);
+        if (*pData++ == '\n') {
+            break;
+        }
+    }
+    *pData++='\0';
+
+    /*return size of data read*/
+    return (pData-data);
+}
+
+/*!
 \fn ulong QextSerialBase::lastError() const
 Returns the code for the last error encountered by the port, or E_NO_ERROR if the last port
 operation was successful.  Possible error codes are:

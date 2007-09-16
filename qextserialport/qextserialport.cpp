@@ -74,6 +74,23 @@ QextSerialPort::QextSerialPort(const QString & name, PortSettings const& setting
 {}
 
 /*!
+\fn QextSerialPort::QextSerialPort(const QextSerialPort& s)
+Copy constructor.
+*/
+QextSerialPort::QextSerialPort(const QextSerialPort& s)
+ : QextBaseType(s)
+{}
+
+/*!
+\fn QextSerialPort& QextSerialPort::operator=(const QextSerialPort& s)
+Overrides the = operator.
+*/
+QextSerialPort& QextSerialPort::operator=(const QextSerialPort& s)
+{
+    return (QextSerialPort&)QextBaseType::operator=(s);
+}
+
+/*!
 \fn QextSerialPort::~QextSerialPort()
 Standard destructor.
 */
