@@ -44,7 +44,7 @@ public:
     virtual ulong lineStatus();
 
 protected:
-    QFile* Posix_File;
+	int	fd;
     struct termios Posix_CommConfig;
     struct termios save_termios;
     struct timeval Posix_Timeout;
