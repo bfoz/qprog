@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: mainwindow.cc,v 1.10 2007/09/02 23:46:52 bfoz Exp $
+	$Id: mainwindow.cc,v 1.11 2007/09/17 03:17:33 bfoz Exp $
 */
 
 #include <iostream>
@@ -58,6 +58,7 @@ MainWindow::MainWindow() : buffer(NULL)
 	connect(http, SIGNAL(dataReadProgress(int, int)), this, SLOT(updateDataReadProgress(int, int)));
 	connect(http, SIGNAL(requestFinished(int, bool)), this, SLOT(httpRequestFinished(int, bool)));
 	connect(http, SIGNAL(responseHeaderReceived(const QHttpResponseHeader &)), this, SLOT(readResponseHeader(const QHttpResponseHeader &)));
+	connect(http, SIGNAL(stateChanged(int)), this, SLOT(httpStateChanged(int)));
 	connect(progressDialog, SIGNAL(canceled()), this, SLOT(cancelDownload()));
 }
 
@@ -118,9 +119,9 @@ void MainWindow::updateDeviceInfo()
 	
 	progressDialog->setWindowTitle("Updating device info");
 	progressDialog->setCancelButtonText("Cancel");
-	progressDialog->setLabelText("Downloading");
 	progressDialog->setMinimumDuration(0);
 	progressDialog->setModal(true);
+	progressDialog->show();		//Force the dialog to open immediately
 
 	http->setHost("bfoz.net");
 	httpGetId = http->get("/projects/qprog/api/?command=export", buffer);
@@ -187,6 +188,26 @@ void MainWindow::httpRequestFinished(int requestId, bool error)
 	}
 
 	static_cast<CentralWidget*>(centralWidget())->FillTargetCombo();	//Force the target type combobox to be reloaded
+}
+
+// Change the progress dialog text according to the state of the connection
+void MainWindow::httpStateChanged(int state)
+{
+	switch(state)
+	{
+		case QHttp::HostLookup:
+			progressDialog->setLabelText("Looking up bfoz.net");
+			break;
+		case QHttp::Connecting:
+			progressDialog->setLabelText("Connecting");
+			break;
+		case QHttp::Reading:
+			progressDialog->setLabelText("Downloading");
+			break;
+		case QHttp::Closing:
+			progressDialog->setLabelText("Disconnecting");
+			break;
+	}
 }
 
 void MainWindow::readResponseHeader(const QHttpResponseHeader &responseHeader)

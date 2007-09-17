@@ -6,7 +6,7 @@
 	
 	Copyright 2006 Brandon Fosdick (BSD License)
 
-	$Id: mainwindow.h,v 1.5 2007/09/02 23:06:06 bfoz Exp $
+	$Id: mainwindow.h,v 1.6 2007/09/17 03:17:33 bfoz Exp $
 */
 
 #ifndef	MAINWINDOW_H
@@ -34,6 +34,7 @@ private slots:
 	void updateDeviceInfo();
 	void cancelDownload();
 	void httpRequestFinished(int, bool);
+	void httpStateChanged(int);
 	void readResponseHeader(const QHttpResponseHeader &);
 	void updateDataReadProgress(int, int);
 	void updateDeviceInfoFromFile();
