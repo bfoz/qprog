@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: centralwidget.cc,v 1.15 2007/09/02 23:56:07 bfoz Exp $
+	$Id: centralwidget.cc,v 1.16 2007/09/23 20:09:18 bfoz Exp $
 */
 
 #include <iostream>
@@ -62,7 +62,7 @@ CentralWidget::CentralWidget() : QWidget()
 	QPushButton	*EraseButton = new QPushButton("Erase");
 	connect(ProgramButton, SIGNAL(clicked()), this, SLOT(program_all()));
 	connect(ReadButton, SIGNAL(clicked()), this, SLOT(read()));
-	connect(VerifyButton, SIGNAL(clicked()), this, SLOT(verify()));
+	connect(VerifyButton, SIGNAL(clicked()), this, SLOT(onVerify()));
 	connect(EraseButton, SIGNAL(clicked()), this, SLOT(bulk_erase()));
 
 	FileName = new QComboBox();
