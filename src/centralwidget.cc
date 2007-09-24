@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: centralwidget.cc,v 1.16 2007/09/23 20:09:18 bfoz Exp $
+	$Id: centralwidget.cc,v 1.17 2007/09/24 05:42:47 bfoz Exp $
 */
 
 #include <iostream>
@@ -261,25 +261,43 @@ void CentralWidget::device_browse()
 #endif	//Q_OS_LINUX
 
 //Load the chip info from the settings
-void loadChipInfo(QString &part, chipinfo::chipinfo &chip_info)
+bool loadChipInfo(QString &part, chipinfo::chipinfo &chip_info)
 {
 	QSettings	settings;
-	settings.beginGroup("PartsDB");
-	settings.beginGroup(part);
-	QStringList keys = settings.childKeys();
-	
-//	std::cout << "Loading chipinfo for " << part.toStdString() << std::endl;
+	if( !settings.childGroups().contains("DeviceInfo") )
+		return false;
 
-	QStringListIterator i(keys);
-	while(i.hasNext())
+	settings.beginGroup("DeviceInfo");
+	
+	if( !settings.childGroups().contains("Devices") )
+		return false;
+	
+	size_t numDevices = settings.beginReadArray("Devices");
+	QStringList devices = settings.childGroups();
+	numDevices = devices.count();	// Rude hack to deal with QSettings bug
+	
+	for(size_t i=0; i<numDevices; ++i)
 	{
-		QString	key(i.next());
-		QString	value(settings.value(key).toString());
-		if( value.size() == 0 )	//Skip empty keys
-			continue;
-		chip_info.set(key.toStdString(), value.toStdString());
-//		std::cout << key.toStdString() << " -> " << value.toStdString() << std::endl;
+		settings.setArrayIndex(i);
+		QVariant n = settings.value("Name");
+		if( n.isValid() && (n.toString()==part) )
+		{
+			QStringList keys = settings.childKeys();
+			QStringListIterator i(keys);
+			while(i.hasNext())
+			{
+				QString	key(i.next());
+				QString	value(settings.value(key).toString());
+				if( value.size() == 0 )	//Skip empty keys
+					continue;
+				chip_info.set(key.toStdString(), value.toStdString());
+			}
+		}
 	}
+	settings.endArray();
+	settings.endGroup();
+
+	return true;
 }
 
 
@@ -448,12 +466,12 @@ bool do_read_all(kitsrus::kitsrus_t& prog, intelhex::hex_data &HexData, QProgres
 	progressDialog->setLabelText("Reading Config");	//Set the progress dialog label
 	if( !do_config_read(prog, HexData) )
 		return false;
-	
+
 	//		std::cout << "Reading " << prog.get_eeprom_size() << " EEPROM bytes\n";
 	progressDialog->setLabelText("Reading EEPROM");	//Set the progress dialog label
 	if( !do_eeprom_read(prog, HexData) )
 		return false;
-	
+
 	return true;
 }
 
