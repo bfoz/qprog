@@ -8,7 +8,7 @@
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
 
-	$Id: intelhex.cc,v 1.3 2007/06/17 05:03:19 bfoz Exp $
+	$Id: intelhex.cc,v 1.4 2007/09/24 05:15:24 bfoz Exp $
  * */
 
 #include <iostream>
@@ -63,7 +63,7 @@ namespace intelhex
 		while( (i!=blocks.rend()) && (i->first > addr))
 			++i;
 
-		element relative_addr = addr - i->first;
+		address_t relative_addr = addr - i->first;
 		//If addr is outside of a block and not-adjacent to the end of any block add a new block
 		if( relative_addr > i->second.size() )
 			return add_block(addr,1)->second[0];
