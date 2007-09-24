@@ -8,7 +8,7 @@
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
 
-	$Id: intelhex.cc,v 1.4 2007/09/24 05:15:24 bfoz Exp $
+	$Id: intelhex.cc,v 1.5 2007/09/24 05:19:36 bfoz Exp $
  * */
 
 #include <iostream>
@@ -326,17 +326,17 @@ namespace intelhex
 		//	otherwise check all of the blocks just to make sure
 		if( linear_addr_rec )
 		{
-			os << INH32M_HEADER;
+			os << INH32M_HEADER << std::endl;
 //			std::cout << __FUNCTION__ << ": linear_addr_rec == true\n";
 		}
 		else
 		{
 			for(iterator i=blocks.begin(); i!=blocks.end(); i++)
 			{
-				if(i->first & 0xFFFF0000)	//Check the upper 16 bits
+				if(i->first > 0xFFFF)	//Check the upper 16 bits
 				{
 					linear_addr_rec = true;
-					os << INH32M_HEADER;
+					os << INH32M_HEADER << std::endl;
 //					std::cout << __FUNCTION__ << ": Found an 04 at " << i->first << std::endl;
 //					std::cout << __FUNCTION__ << ": i->first & 0xFFFF0000 == " << (i->first  & 0xFFFF0000) << std::endl;
 					break;	//Only need to find one
