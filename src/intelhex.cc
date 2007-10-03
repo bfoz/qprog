@@ -8,7 +8,7 @@
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
 
-	$Id: intelhex.cc,v 1.7 2007/10/03 03:18:14 bfoz Exp $
+	$Id: intelhex.cc,v 1.8 2007/10/03 04:20:32 bfoz Exp $
  * */
 
 #include <iostream>
@@ -240,7 +240,7 @@ namespace intelhex
 				fscanf(fp, "%4x", &address);		//Read in address
 				fscanf(fp, "%2x", &rtype);			//Read type
 
-				count /= 2;								//Convert byte count to word count
+				unsigned numWords(count/2);			//Convert byte count to word count
 				address /= 2;							//Byte address to word address
 				
 				switch(rtype)	//What type of record?
@@ -248,10 +248,10 @@ namespace intelhex
 					case 0: 	//Data block so store it
 						//Make a data block
 						a = (static_cast<uint32_t>(linear_address) << 16) + address;
-						db = add_block(a, count);
+						db = add_block(a, numWords);
 //						std::cout << __FUNCTION__ << ": db->first = " << std::hex << db->first << std::endl;
 //						std::cout << __FUNCTION__ << ": db->first*2 = " << std::hex << (db->first*2) << std::endl;
-						for(i=0; i<count; i++)				//Read all of the data bytes
+						for(i=0; i<numWords; i++)				//Read all of the data bytes
 						{
 							fscanf(fp, "%2x", &lo);			//Low byte
 							fscanf(fp, "%2x", &hi);			//High byte
