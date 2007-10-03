@@ -8,7 +8,7 @@
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
 
-	$Id: intelhex.cc,v 1.8 2007/10/03 04:20:32 bfoz Exp $
+	$Id: intelhex.cc,v 1.9 2007/10/03 04:38:49 bfoz Exp $
  * */
 
 #include <iostream>
@@ -348,19 +348,21 @@ namespace intelhex
 		{
 			//Check upper 16 bits of the block address for non-zero,
 			//	which indicates that a segment address record is needed
-			if( (i->first & 0xFFFF0000) != 0 )
+			if( i->first > 0xFFFF )
 			{
+				const uint16_t addr(i->first >> 16);
 				//Has a record for this segment already been emitted?
-				if( static_cast<uint16_t>(i->first >> 16) != linear_address )
+				if( addr != linear_address )
 				{
 					//Emit a new segment address record
 					os << ":02000004";
 					os.width(4);
-					os << linear_address;	//Address
-					os << (0x01 + ~(0x06 + ((linear_address>>8)&0xFF) + (linear_address&0xFF)));
+					os << addr;	//Address
+					// checksum
+					os << "00";	// bogus checksum
 					os << std::endl;
-					linear_address = (i->first & 0xFFFF0000) >> 16;	//Update segment_address
-				}
+					linear_address = addr;
+ 				}
 			}
 			checksum = 0;
 			os << ':';	//Every line begins with ':'
