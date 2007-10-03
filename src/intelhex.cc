@@ -8,7 +8,7 @@
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
 
-	$Id: intelhex.cc,v 1.6 2007/10/03 03:13:28 bfoz Exp $
+	$Id: intelhex.cc,v 1.7 2007/10/03 03:18:14 bfoz Exp $
  * */
 
 #include <iostream>
@@ -264,7 +264,7 @@ namespace intelhex
 						segment_addr_rec = true;
 						break;
 					case 4:	//Linear address record (INHX32)
-						if(address == 0x0000)
+						if( (0 == address) && (2 == count) )
 						{
 							fscanf(fp, "%04hx", &linear_address);		//Get the new linear address
 							linear_addr_rec = true;
