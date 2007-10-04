@@ -9,7 +9,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: chipinfo.cc,v 1.2 2007/06/17 05:03:19 bfoz Exp $
+	$Id: chipinfo.cc,v 1.3 2007/10/04 03:29:33 bfoz Exp $
 */
 
 #include <iostream>
@@ -164,7 +164,8 @@ namespace chipinfo
 		else if(key=="Type") {}
 		else if(key=="ChipID1")	{}
 		else if(key=="FlashROM")	{}
-		else if(key=="NumConfigWords")	{}
+		else if(key=="NumConfigWords")
+			num_config_words = strtol(value.c_str(), NULL, 10);
 		else if(key=="NumEEPROMBytes")
 			eeprom_size = strtol(value.c_str(), NULL, 10);
 		else if(key=="NumPayloadBits")	{}
