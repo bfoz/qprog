@@ -8,7 +8,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: kitsrus.cc,v 1.4 2007/06/17 05:03:20 bfoz Exp $
+	$Id: kitsrus.cc,v 1.5 2007/10/04 03:25:07 bfoz Exp $
  * */
 #include <fcntl.h>
 #include <iostream>
@@ -251,34 +251,33 @@ namespace kitsrus
 //		std::cout << __FUNCTION__ << std::endl;
 		
 		intelhex::hex_data::address_t	i;
-		if( info.is14bit() )
+		//If the ID bits were specified use them
+		//	otherwise use blanks
+		i = info.get_id_start();
+		if( HexData.isset(i) )
 		{
-			//If the ID bits were specified use them
-			//	otherwise use blanks
-			i = info.get_id_start();
-			if( HexData.isset(i) )
-			{
-				tmp_config[0] = HexData[i++];
-				tmp_config[1] = HexData[i++];
-				tmp_config[2] = HexData[i++];
-				tmp_config[3] = HexData[i];
-			}
-			tmp_config[4] = 'F';
-			tmp_config[5] = 'F';
-			tmp_config[6] = 'F';
-			tmp_config[7] = 'F';
-			i = info.get_config_start();
-			if( HexData.isset(i) )
-			{
-				tmp_config[8] = HexData[i] & 0x00FF;
-				tmp_config[9] = (HexData[i] & 0xFF00) >> 8;
-			}
-			else
-			{
-				std::cerr << __FUNCTION__ << ": no config bits\n";
-				return false;		//FIXME
-			}
+			tmp_config[0] = HexData[i++];
+			tmp_config[1] = HexData[i++];
+			tmp_config[2] = HexData[i++];
+			tmp_config[3] = HexData[i];
 		}
+		tmp_config[4] = 'F';
+		tmp_config[5] = 'F';
+		tmp_config[6] = 'F';
+		tmp_config[7] = 'F';
+
+		i = info.get_config_start();
+		if( i == 0 )
+			return false;		// Config bits are never at address zero
+		const intelhex::hex_data::address_t end(i + info.numConfigWords());
+		for(unsigned j=0; i < end; ++i, j+=2)
+		{
+			if( !HexData.isset(i) )
+				continue;
+			tmp_config[j] = HexData[i] & 0x00FF;
+			tmp_config[j+1] = (HexData[i] & 0xFF00) >> 8;
+		}
+
 		write(CMD_WRITE_CONFIG);
 		write('0');
 		write('0');
@@ -369,9 +368,17 @@ namespace kitsrus
 			HexData[0x2001] = a[3];
 			HexData[0x2002] = a[4];
 			HexData[0x2003] = a[5];
-
-			HexData[0x2007] = (a[0x0B] << 8) | a[0x0A];
 		}
+
+		intelhex::hex_data::address_t j(info.get_config_start());
+		if( j == 0 )	// Config bits are never at address zero
+			return false;
+		const intelhex::hex_data::address_t end(j + info.numConfigWords());
+		for(unsigned i=0x0B; j < end; i+=2, ++j)
+		{
+			HexData[j] = (a[i] << 8) | a[i+1];
+		}
+
 		return true;
 	}
 
