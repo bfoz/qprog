@@ -9,7 +9,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: chipinfo.h,v 1.2 2007/06/17 05:03:19 bfoz Exp $
+	$Id: chipinfo.h,v 1.3 2007/10/04 03:31:44 bfoz Exp $
 */
 
 #ifndef	CHIPINFO_H
@@ -37,10 +37,10 @@ namespace chipinfo
 		
 		#define	CONFIG_START_12BIT	0x2007		
 		#define	CONFIG_START_14BIT	0x2007		
-		#define	CONFIG_START_16BIT	0x30000
+		#define	CONFIG_START_16BIT	0x300000
 
 		#define	ID_START_14BIT	0x2000
-		#define	ID_START_16BIT	0x0000		//FIXME
+		#define	ID_START_16BIT	0x200000
 
 		//Core Type Codes	for chipinfo file
 		#define	Core16_C	0   // 18F6x2x
@@ -63,6 +63,7 @@ namespace chipinfo
 		uint16_t	chip_id;
 		rom_size_type	rom_size;			//Number of ROM words
 		eeprom_size_type	eeprom_size; 	  //EEPROM size in bytes
+		uint8_t	num_config_words;
 		uint16_t	fuse_blank;
 		uint32_t	rom_blank;		//Value of a blank ROM word
 		uint8_t	program_delay;
@@ -85,6 +86,7 @@ namespace chipinfo
 		uint32_t	get_config_start();
 		uint32_t	get_id_start();
 		uint32_t	get_blank_value();
+		const uint8_t	numConfigWords() const { return num_config_words;	}
 	};
 
 }
