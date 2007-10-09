@@ -8,7 +8,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: kitsrus.cc,v 1.5 2007/10/04 03:25:07 bfoz Exp $
+	$Id: kitsrus.cc,v 1.6 2007/10/09 06:10:03 bfoz Exp $
  * */
 #include <fcntl.h>
 #include <iostream>
@@ -270,7 +270,7 @@ namespace kitsrus
 		if( i == 0 )
 			return false;		// Config bits are never at address zero
 		const intelhex::hex_data::address_t end(i + info.numConfigWords());
-		for(unsigned j=0; i < end; ++i, j+=2)
+		for(unsigned j=8; i < end; ++i, j+=2)
 		{
 			if( !HexData.isset(i) )
 				continue;
