@@ -8,7 +8,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: kitsrus.cc,v 1.6 2007/10/09 06:10:03 bfoz Exp $
+	$Id: kitsrus.cc,v 1.7 2007/10/09 06:17:25 bfoz Exp $
  * */
 #include <fcntl.h>
 #include <iostream>
@@ -278,18 +278,38 @@ namespace kitsrus
 			tmp_config[j+1] = (HexData[i] & 0xFF00) >> 8;
 		}
 
-		write(CMD_WRITE_CONFIG);
+		unsigned progress(0);
+		const unsigned finished(info.is16bit() ? 50 : 25);
+		write(CMD_WRITE_CONFIG);	// 16F parts
 		write('0');
 		write('0');
-		for( i=0; i<22; ++i)
+		progress += 3;
+		for( i=0; i<22; ++i, ++progress)
 		{
 			write(tmp_config[i]);
-			if( !emit_callback(i+1+2, 22+2) )	//Emit callback and check for cancellation
+			if( !emit_callback(progress, finished) )	//Emit callback and check for cancellation
 				return false;
 		}
 //		std::cout << __FUNCTION__ << "1" << std::endl;
 		read();	//Throw away the ack
 //		std::cout << __FUNCTION__ << "2" << std::endl;
+
+		if( info.is16bit() )
+		{
+			write(CMD_WRITE_FUSE);		// 18F parts
+			write('0');
+			write('0');
+			progress += 3;
+			for( i=0; i<22; ++i, ++progress)
+			{
+				write(tmp_config[i]);
+				if( !emit_callback(progress, finished) )	//Emit callback and check for cancellation
+					return false;
+			}
+			read();	//Throw away the ack
+		}
+
+		emit_callback(finished, finished);
 		return true;
 	}
 
