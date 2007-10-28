@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: centralwidget.cc,v 1.17 2007/09/24 05:42:47 bfoz Exp $
+	$Id: centralwidget.cc,v 1.18 2007/10/28 19:19:41 bfoz Exp $
 */
 
 #include <iostream>
@@ -535,25 +535,9 @@ void CentralWidget::program_all()
 			QMessageBox::critical(this, "Error", tr("Error writing to chip"));
 			return;
 		}
-		
-		if( VerifyCheckBox->isChecked() )
-		{
-			if( !doProgrammerInit(prog) )
-				return;
-
-			intelhex::hex_data VerifyData;
-			if( !do_read_all(prog, VerifyData, progressDialog) )
-			{
-				progressDialog->reset();
-				QMessageBox::critical(this, "Error", tr("Error reading chip"));
-			}
-			
-			if(intelhex::compare(HexData, VerifyData) )
-				QMessageBox::information(this, "Verify Results", "Pass");
-			else
-				QMessageBox::information(this, "Verify Results", "Fail");
-		}
 	}
+	if( VerifyCheckBox->isChecked() )
+		onVerify();
 }
 
 #ifdef	Q_OS_DARWIN
