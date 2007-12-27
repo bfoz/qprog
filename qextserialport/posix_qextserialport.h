@@ -44,7 +44,7 @@ public:
     virtual ulong lineStatus();
 
 protected:
-	int	fd;
+    int	fd;
     struct termios Posix_CommConfig;
     struct termios save_termios;
     struct timeval Posix_Timeout;
