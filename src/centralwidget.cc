@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: centralwidget.cc,v 1.18 2007/10/28 19:19:41 bfoz Exp $
+	$Id: centralwidget.cc,v 1.19 2007/12/27 21:07:20 bfoz Exp $
 */
 
 #include <iostream>
@@ -221,8 +221,8 @@ void CentralWidget::browse()
 	{
 		QString str(directory);
 		str.remove(0, str.lastIndexOf('/')+1);	//Don't display leading path info
-		FileName->addItem(str, QVariant(directory));
-		FileName->setCurrentIndex(FileName->count() - 1);
+		FileName->insertItem(0, str, QVariant(directory));
+		FileName->setCurrentIndex(0);
 
 		//Save the new file list to settings
 		settings.beginWriteArray("CentralWidget/FileName/Last");
