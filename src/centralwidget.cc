@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: centralwidget.cc,v 1.19 2007/12/27 21:07:20 bfoz Exp $
+	$Id: centralwidget.cc,v 1.20 2007/12/27 21:24:05 bfoz Exp $
 */
 
 #include <iostream>
@@ -680,10 +680,19 @@ void CentralWidget::onVerify()
 			QMessageBox::critical(this, "Error", tr("Error reading chip"));
 		}
 		
-		if(intelhex::compare(HexData, VerifyData) )
-			QMessageBox::information(this, "Verify Results", "Pass");
-		else
-			QMessageBox::information(this, "Verify Results", "Fail");
+	// Compare ROM
+	const bool flash = intelhex::compare(HexData, VerifyData, chip_info.romBlank(), chip_info.romBegin(), chip_info.romEnd());
+	// Compare EEPROM
+	const bool eeprom = intelhex::compare(HexData, VerifyData, chip_info.eepromBlank(), chip_info.eepromBegin(), chip_info.eepromEnd());
+	// Compare Config
+//	const bool config = intelhex::compare(HexData, VerifyData, chip_info.configBlank(), chip_info.configBegin(), chip_info.configEnd());
+
+	QMessageBox::information(this, "Verify Results", 
+				 tr("Flash\t%1\nEEPROM\t%2\nConfig\t%3")
+				    .arg(flash?"Pass":"Fail")
+				    .arg(eeprom?"Pass":"Fail")
+				    .arg("Not Verified")
+				 );
 	}
 }
 
