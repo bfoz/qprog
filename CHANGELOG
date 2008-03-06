@@ -1,5 +1,7 @@
 Version 0.4 - July 20, 2007
-- OSX: Automatic update checking using the Sparkle framework- OSX: Qt4 is back to being dynamically linked because Trolltech now provides an installer for OSX.- Upgrade to QextSerialPort 1.1
+- OSX: Automatic update checking using the Sparkle framework
+- OSX: Qt4 is back to being dynamically linked because Trolltech now provides an installer for OSX.
+- Upgrade to QextSerialPort 1.1
 
 Version 0.3 - March 3, 2006
 -OSX: "New window on read" functionality added and enabled
