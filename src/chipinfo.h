@@ -9,7 +9,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: chipinfo.h,v 1.3 2007/10/04 03:31:44 bfoz Exp $
+	$Id: chipinfo.h,v 1.4 2008/03/07 01:15:18 bfoz Exp $
 */
 
 #ifndef	CHIPINFO_H
@@ -23,6 +23,7 @@ namespace chipinfo
 {
 	struct chipinfo
 	{
+		typedef	uint32_t	address_t;
 		typedef	uint32_t	rom_size_type;
 		typedef	uint16_t	eeprom_size_type;
 		
@@ -87,6 +88,41 @@ namespace chipinfo
 		uint32_t	get_id_start();
 		uint32_t	get_blank_value();
 		const uint8_t	numConfigWords() const { return num_config_words;	}
+
+		const uint8_t	eepromBlank()	const { return 0xFF;	}
+		const address_t	eepromBegin()	const
+		{
+			switch(core_type)
+			{
+				case Core16_A:
+				case Core16_B:
+				case Core16_C:
+					return EEPROM_START_16BIT;
+				default:
+					return EEPROM_START_14BIT;
+			}
+		}
+		const address_t	eepromEnd()		const { return eepromBegin() + eeprom_size;	}
+
+		const uint16_t	romBlank()	const
+		{
+			switch(core_type)
+			{
+				case Core10_A:
+				case Core12_A:
+				case Core12_B:
+					return BLANK_12BIT;
+				case Core16_A:
+				case Core16_B:
+				case Core16_C:
+					return BLANK_16BIT;
+				default:
+					return BLANK_14BIT;
+			}
+		}
+		const address_t	romBegin()	const { return 0; }
+		const address_t	romEnd()	const { return romBegin() + rom_size; }
+		
 	};
 
 }
