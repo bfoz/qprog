@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: centralwidget.cc,v 1.20 2007/12/27 21:24:05 bfoz Exp $
+	$Id: centralwidget.cc,v 1.21 2008/03/07 22:48:34 bfoz Exp $
 */
 
 #include <iostream>
@@ -482,18 +482,19 @@ bool CentralWidget::doProgrammerInit(kitsrus::kitsrus_t& prog)
 		QMessageBox::critical(this, "Error", "Could not open serial port");
 		return false;
 	}
-	
+
 	if( !do_reset(prog) )			//Reset the programmer
 		return false;
-	
+
 	//Check the protocol version
 	std::string protocol = prog.get_protocol();
+
 	if( protocol != "P018" )
 	{
 		QMessageBox::critical(this, "Error", tr("Wrong protocol version ( %1 )").arg(QString(protocol.c_str())));
 		return false;
 	}
-	
+
 	prog.init_program_vars();	//Initialize programming variables
 	
 	prog.set_callback(&handle_progress, this);	//Set the progress callback
@@ -506,7 +507,9 @@ void CentralWidget::program_all()
 	chipinfo::chipinfo	chip_info;
 	QString	target(TargetType->itemText(TargetType->currentIndex()));
 
-	loadChipInfo(target, chip_info);	//Load the chip info from the settings
+	//Load the chip info from the settings
+	if( !loadChipInfo(target, chip_info) )
+	    return;
 	
 	//Grab the currently selected file name
 	if( FileName->currentIndex() == -1 )
@@ -612,7 +615,9 @@ void CentralWidget::read()
 
 	QString	target(TargetType->itemText(TargetType->currentIndex()));
 
-	loadChipInfo(target, chip_info);	//Load the chip info from the settings
+	//Load the chip info from the settings
+	if( !loadChipInfo(target, chip_info) )
+	    return;
 
 	QString	path(ProgrammerDeviceNode->itemData(ProgrammerDeviceNode->currentIndex()).toString());
 
@@ -650,7 +655,9 @@ void CentralWidget::onVerify()
 	chipinfo::chipinfo	chip_info;
 	QString	target(TargetType->itemText(TargetType->currentIndex()));
 	
-	loadChipInfo(target, chip_info);	//Load the chip info from the settings
+	//Load the chip info from the settings
+	if( !loadChipInfo(target, chip_info) )
+	    return;
 	
 	//Grab the currently selected file name
 	if( FileName->currentIndex() == -1 )
@@ -679,7 +686,7 @@ void CentralWidget::onVerify()
 			progressDialog->reset();
 			QMessageBox::critical(this, "Error", tr("Error reading chip"));
 		}
-		
+
 	// Compare ROM
 	const bool flash = intelhex::compare(HexData, VerifyData, chip_info.romBlank(), chip_info.romBegin(), chip_info.romEnd());
 	// Compare EEPROM
@@ -701,7 +708,9 @@ void CentralWidget::bulk_erase()
 	chipinfo::chipinfo	chip_info;
 	QString	target(TargetType->itemData(TargetType->currentIndex()).toString());
 	
-	loadChipInfo(target, chip_info);	//Load the chip info from the settings
+	//Load the chip info from the settings
+	if( !loadChipInfo(target, chip_info) )
+	    return;
 
 	QString	path(ProgrammerDeviceNode->itemData(ProgrammerDeviceNode->currentIndex()).toString());
 
