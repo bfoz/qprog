@@ -861,12 +861,11 @@ bool Posix_QextSerialPort::open(OpenMode mode)
 	if ( (fd = ::open(port.toAscii(), O_RDWR | O_NOCTTY | O_FSYNC)) != -1 )
 	{
             qDebug("Opened File succesfully");
-	    setOpenMode(mode);
 
-	    tcgetattr(fd, &save_termios);	//Save the old termios
-	    Posix_CommConfig = save_termios;
-
-	    cfmakeraw(&Posix_CommConfig);	//Set for raw access to the port
+	    setOpenMode(mode);			// Flag the port as opened
+	    tcgetattr(fd, &old_termios);	// Save the old termios
+	    Posix_CommConfig = old_termios;	// Make a working copy
+	    cfmakeraw(&Posix_CommConfig);	// Enable raw access
 
             /*set up other port settings*/
             Posix_CommConfig.c_cflag |= CREAD | CLOCAL;	//Enable RX and disable control signals
@@ -909,7 +908,7 @@ is not currently open.
 void Posix_QextSerialPort::close()
 {
     LOCK_MUTEX();
-	 tcsetattr(fd, TCSAFLUSH | TCSANOW, &save_termios);	//Restore old termios
+	 tcsetattr(fd, TCSAFLUSH | TCSANOW, &old_termios);	//Restore old termios
 //    Posix_File->close();
     QIODevice::close();
     UNLOCK_MUTEX();

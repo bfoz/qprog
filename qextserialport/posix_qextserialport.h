@@ -46,7 +46,7 @@ public:
 protected:
     int	fd;
     struct termios Posix_CommConfig;
-    struct termios save_termios;
+    struct termios old_termios;
     struct timeval Posix_Timeout;
     struct timeval Posix_Copy_Timeout;
 
