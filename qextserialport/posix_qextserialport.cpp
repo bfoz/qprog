@@ -31,6 +31,7 @@ _TTY_HPUX_       HP-UX           /dev/tty1p0, /dev/tty2p0
 _TTY_SUN_        SunOS/Solaris   /dev/ttya, /dev/ttyb
 _TTY_DIGITAL_    Digital UNIX    /dev/tty01, /dev/tty02
 _TTY_FREEBSD_    FreeBSD         /dev/ttyd0, /dev/ttyd1
+_TTY_OPENBSD_    OpenBSD         /dev/tty00, /dev/tty01
 _TTY_LINUX_      Linux           /dev/ttyS0, /dev/ttyS1
 <none>           Linux           /dev/ttyS0, /dev/ttyS1
 \endverbatim
@@ -865,24 +866,31 @@ bool Posix_QextSerialPort::open(OpenMode mode)
 	    tcgetattr(fd, &save_termios);	//Save the old termios
 	    Posix_CommConfig = save_termios;
 
-//				display_termios(Posix_CommConfig);
 	    cfmakeraw(&Posix_CommConfig);	//Set for raw access to the port
-//				display_termios(Posix_CommConfig);
 
             /*set up other port settings*/
             Posix_CommConfig.c_cflag |= CREAD | CLOCAL;	//Enable RX and disable control signals
             Posix_CommConfig.c_lflag = 0;
             Posix_CommConfig.c_iflag = IGNBRK;	//Ignore break signals
             Posix_CommConfig.c_oflag = 0;
-            Posix_CommConfig.c_cc[VMIN]=1;	//Non-blocking read
+            Posix_CommConfig.c_cc[VMIN]=1;	// Blocking read
 //            Posix_CommConfig.c_cc[VTIME]=5;
+#ifdef _POSIX_VDISABLE	// Is a disable character available on this system?
+	    // Some systems allow for per-device disable-characters, so get the
+	    //  proper value for the configured device
+	    const long vdisable = fpathconf(fd, _PC_VDISABLE);
+	    Posix_CommConfig.c_cc[VINTR] = vdisable;
+	    Posix_CommConfig.c_cc[VQUIT] = vdisable;
+	    Posix_CommConfig.c_cc[VSTART] = vdisable;
+	    Posix_CommConfig.c_cc[VSTOP] = vdisable;
+	    Posix_CommConfig.c_cc[VSUSP] = vdisable;
+#endif //_POSIX_VDISABLE
             setBaudRate(Settings.BaudRate);	// !! This updates Posix_CommConfig
 //            setDataBits(Settings.DataBits);
 //            setParity(Settings.Parity);
 //            setStopBits(Settings.StopBits);
 //            setFlowControl(Settings.FlowControl);
             setTimeout(Settings.Timeout_Sec, Settings.Timeout_Millisec);
-//				display_termios(Posix_CommConfig);
 	    tcflush(fd, TCIOFLUSH);
 	    tcsetattr(fd, TCSAFLUSH, &Posix_CommConfig);
         } else {
@@ -1128,7 +1136,7 @@ qint64 Posix_QextSerialPort::readData(char * data, qint64 maxSize)
     {
 	retVal = ::read(fd, data, maxSize);
 	if (retVal==-1)
-	    lastErr=E_READ_FAILED;	
+	    lastErr=E_READ_FAILED;
     }
     UNLOCK_MUTEX();
 
