@@ -858,7 +858,7 @@ bool Posix_QextSerialPort::open(OpenMode mode)
     if (!isOpen()) {
         /*open the port*/
         qDebug("Trying to open File");
-	if ( (fd = ::open(port.toStdString().c_str(), O_RDWR | O_NOCTTY | O_FSYNC)) != -1 )
+	if ( (fd = ::open(port.toAscii(), O_RDWR | O_NOCTTY | O_FSYNC)) != -1 )
 	{
             qDebug("Opened File succesfully");
 	    setOpenMode(mode);
