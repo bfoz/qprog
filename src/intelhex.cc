@@ -8,7 +8,7 @@
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
 
-	$Id: intelhex.cc,v 1.11 2008/03/12 04:40:24 bfoz Exp $
+	$Id: intelhex.cc,v 1.12 2008/03/12 04:41:08 bfoz Exp $
  * */
 
 #include <iostream>
@@ -218,7 +218,7 @@ namespace intelhex
 	{
 		FILE	*fp;
 		dblock	*db;		//Temporary pointer
-		unsigned int	hi, lo, address, count, rtype, i, j;
+		unsigned int	hi, lo, address, count, rtype, i;
 		uint16_t	linear_address(0);
 		uint32_t	a;
 
