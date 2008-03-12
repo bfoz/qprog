@@ -908,9 +908,18 @@ is not currently open.
 void Posix_QextSerialPort::close()
 {
     LOCK_MUTEX();
-	 tcsetattr(fd, TCSAFLUSH | TCSANOW, &old_termios);	//Restore old termios
-//    Posix_File->close();
-    QIODevice::close();
+    if( isOpen() )
+    {
+	// Force a flush and then restore the original termios
+	flush();
+	// Using both TCSAFLUSH and TCSANOW here discards any pending input
+	tcsetattr(fd, TCSAFLUSH | TCSANOW, &old_termios);   // Restore termios
+	// Be a good QIODevice and call QIODevice::close() before POSIX close()
+	//  so the aboutToClose() signal is emitted at the proper time
+	QIODevice::close();	// Flag the device as closed
+	// QIODevice::close() doesn't actually close the port, so do that here
+	::close(fd);
+    }
     UNLOCK_MUTEX();
 }
 
@@ -922,9 +931,8 @@ associated with the class is not currently open.
 void Posix_QextSerialPort::flush()
 {
     LOCK_MUTEX();
-    if (isOpen()) {
+    if (isOpen())
 	tcflush(fd, TCIOFLUSH);
-    }
     UNLOCK_MUTEX();
 }
 
