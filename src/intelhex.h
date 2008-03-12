@@ -7,7 +7,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: intelhex.h,v 1.4 2008/03/12 03:27:58 bfoz Exp $
+	$Id: intelhex.h,v 1.5 2008/03/12 04:42:25 bfoz Exp $
 * */
 
 #ifndef INTELHEXH
@@ -78,6 +78,6 @@ namespace intelhex
 		void		truncate(size_type);			//Truncate all of the blocks to a given length
 	};
 
-	bool compare(hex_data&, hex_data&);
+	bool compare(hex_data&, hex_data&, hex_data::element_t, hex_data::address_t, hex_data::address_t);
 }
 #endif

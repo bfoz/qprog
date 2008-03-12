@@ -8,7 +8,7 @@
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
 
-	$Id: intelhex.cc,v 1.10 2008/03/12 03:27:58 bfoz Exp $
+	$Id: intelhex.cc,v 1.11 2008/03/12 04:40:24 bfoz Exp $
  * */
 
 #include <iostream>
@@ -415,24 +415,29 @@ namespace intelhex
 		}
 	}
 
-	//Compare two sets of hex data
-	//	Return true is every word in hex1 has a corresponding, and equivalent, word in hex2
-	//	Assumes both data sets are sorted
-	bool compare(hex_data& hex1, hex_data& hex2)
+    //Compare two sets of hex data
+    //	Return true if every word in hex1 has a corresponding, and equivalent, word in hex2
+    //	Assumes both data sets are sorted
+    bool compare(hex_data& hex1, hex_data& hex2, hex_data::element_t mask, hex_data::address_t begin, hex_data::address_t end)
+    {
+	//Walk block list from hex1
+	for( hex_data::iterator i = hex1.begin(); i != hex1.end(); ++i )
 	{
-		//Walk block list from hex1
-		for( hex_data::iterator i = hex1.begin(); i != hex1.end(); ++i )
-		{
-			//Walk the block
-			hex_data::address_t addr(i->first);
-			for( hex_data::data_container::iterator j = i->second.begin(); j != i->second.end(); ++j)
-			{
-				if( (*j) != hex2.get(addr, 0xFFFF) )
-					return false;
-				++addr;
-			}
-		}
-		return true;
+	    //Walk the block
+	    hex_data::address_t addr(i->first);
+	    for( hex_data::data_container::iterator j = i->second.begin(); j != i->second.end(); ++j, ++addr)
+	    {
+		if( (addr < begin) || (addr > end) )
+		    continue;
+
+		// Look for a corresponding element in hex2
+		const hex_data::element_t rhs = hex2.get(addr, mask);
+		//Compare both sides through the given mask
+		if( ((*j) & mask) != (rhs & mask) )
+		    return false;
+	    }
 	}
+	return true;
+    }
 
 }
