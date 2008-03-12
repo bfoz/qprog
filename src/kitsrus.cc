@@ -8,7 +8,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: kitsrus.cc,v 1.9 2007/10/25 03:48:45 bfoz Exp $
+	$Id: kitsrus.cc,v 1.10 2008/03/12 03:27:58 bfoz Exp $
  * */
 #include <fcntl.h>
 #include <iostream>
@@ -159,7 +159,7 @@ namespace kitsrus
 					for(i=0; i<(32/2); ++i)
 					{
 //					std::cout << __FUNCTION__ << ": Pre get\n";
-						const intelhex::hex_data::element a = HexData.get(j, info.get_blank_value());
+						const intelhex::hex_data::element_t a = HexData.get(j, info.get_blank_value());
 //					std::cout << __FUNCTION__ << ": " << std::hex << a << " @ " << std::hex << j << "\n";
 						write( (a & 0xFF00) >> 8);
 						write( a & 0x00FF);
@@ -319,7 +319,7 @@ namespace kitsrus
 	//Read from a PIC into a hex_data structure
 	bool kitsrus_t::read_rom(intelhex::hex_data &HexData)
 	{
-		intelhex::hex_data::element a;
+		intelhex::hex_data::element_t a;
 		
 		write(CMD_READ_ROM);
 //		std::cout << "About to read " << info.rom_size << " words\n";
@@ -343,7 +343,7 @@ namespace kitsrus
 		intelhex::hex_data::address_t i(info.get_eeprom_start());
 		const intelhex::hex_data::address_t stop(i + info.eeprom_size);
 
-//		intelhex::hex_data::element a;
+//		intelhex::hex_data::element_t a;
 		intelhex::hex_data::address_t j(1);
 
 //		std::cout << __FUNCTION__ << ": eeprom_start = " << std::hex << i << std::endl;
@@ -365,7 +365,7 @@ namespace kitsrus
 
 	bool kitsrus_t::read_config(intelhex::hex_data &HexData)
 	{
-		intelhex::hex_data::element	a[26];
+		intelhex::hex_data::element_t	a[26];
 		write(CMD_READ_CONFIG);
 		
 		uint8_t b = read();	//Throw away the ack

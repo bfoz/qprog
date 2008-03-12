@@ -8,7 +8,7 @@
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
 
-	$Id: intelhex.cc,v 1.9 2007/10/03 04:38:49 bfoz Exp $
+	$Id: intelhex.cc,v 1.10 2008/03/12 03:27:58 bfoz Exp $
  * */
 
 #include <iostream>
@@ -40,7 +40,7 @@ namespace intelhex
 	//Extend the data block array by one element
 	//	and return a pointer to the new element
 	//	Initialize the element with address and length
-	hex_data::dblock* hex_data::add_block(address_t address, size_type length, element fill)
+	hex_data::dblock* hex_data::add_block(address_t address, size_type length, element_t fill)
 	{
 		dblock db;	//A list of pointers would be faster, but this isn't too bad
 		blocks.push_back(db);
@@ -52,7 +52,7 @@ namespace intelhex
 	//Array access operator
 	//Assumes that the blocks have been sorted by address in ascending order
 	//	Sort order is maintained
-	hex_data::element &hex_data::operator[](hex_data::address_t addr)
+	hex_data::element_t &hex_data::operator[](hex_data::address_t addr)
 	{
 		if(blocks.size() == 0)	//Add a block if the sequence is empty
 			add_block(0,0);
@@ -76,7 +76,7 @@ namespace intelhex
 
 	//FIXME	Nasty kludge
 	//	I should really create an iterator class to handle this
-	hex_data::element	hex_data::get(address_t addr, element blank)
+	hex_data::element_t	hex_data::get(address_t addr, element_t blank)
 	{
 		//Start at the end of the list and find the first (last) block with an address
 		//	less than addr
@@ -89,7 +89,7 @@ namespace intelhex
 			return blank;
 			
 		
-		element relative_addr = addr - i->first;
+		element_t relative_addr = addr - i->first;
 		//If relative_addr is past the end of the block, return blank
 		if( relative_addr >= i->second.size() )
 			return blank;
@@ -112,7 +112,7 @@ namespace intelhex
 
 	//Add a new word to the end of the sequence
 	//	Assumes the sequence has been sorted
-	void hex_data::push_back(hex_data::element a)
+	void hex_data::push_back(hex_data::element_t a)
 	{
 		if(blocks.size() == 0)	//Add a block if the sequence is empty
 			add_block(0,0);

@@ -7,7 +7,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: intelhex.h,v 1.3 2007/06/17 05:03:19 bfoz Exp $
+	$Id: intelhex.h,v 1.4 2008/03/12 03:27:58 bfoz Exp $
 * */
 
 #ifndef INTELHEXH
@@ -31,9 +31,9 @@ namespace intelhex
 	{
 		//Each line of the hex file generates a block of memory at a particular address
 		// pair<>.first is the address, pair<>.second is the data
-		typedef	uint16_t	element;								//Data element
+		typedef	uint16_t	element_t;								//Data element
 		typedef	uint32_t	address_t;
-		typedef	std::vector<element>	data_container;		//Element container
+		typedef	std::vector<element_t>	data_container;		//Element container
 		typedef	std::pair<address_t, data_container>	dblock;	//Data block container
 		typedef	std::list<dblock> lst_dblock;						//List of data blocks
 
@@ -58,7 +58,7 @@ namespace intelhex
 		iterator	begin() { return blocks.begin(); }
 		iterator	end() { return blocks.end(); }
 		void	clear();		//Delete everything
-		void	push_back(element);	//Add a word to the end of the set
+		void	push_back(element_t);	//Add a word to the end of the set
 		size_type	size();
 		size_type	size_below_addr(address_t);
 		size_type	size_in_range(address_t, address_t);	//number of words in [lo, hi)
@@ -66,11 +66,11 @@ namespace intelhex
 		
 		bool	isset(address_t);
 		
-		element	&operator[](address_t);	//Array access operator
-		element	get(address_t, element);	//FIXME	Nasty kludge
+		element_t	&operator[](address_t);	//Array access operator
+		element_t	get(address_t, element_t);	//FIXME	Nasty kludge
 		
 		dblock	*new_block();					//Extend the array by one block
-		dblock	*add_block(address_t, size_type, element = 0xFFFF);	//Append a new block with address/length
+		dblock	*add_block(address_t, size_type, element_t = 0xFFFF);	//Append a new block with address/length
 		bool		load(const char *);			//Load a hex file from disk
 		bool		load(const std::string &s) {return load(s.c_str());}	//Load a hex file from disk
 		void		write(const char *);			//Save hex data to a hex file
