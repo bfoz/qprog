@@ -803,8 +803,10 @@ void Posix_QextSerialPort::setTimeout(ulong sec, ulong millisec)
 void display_termios(termios buff)
 {
 	printf("c_cflag = %X (", buff.c_cflag);
+#ifdef	CIGNORE	// Some Linux distros (Ubuntu) don't define CIGNORE
 	if(buff.c_cflag & CIGNORE)
 		printf(" CIGNORE");
+#endif	// CIGNORE
 	switch( buff.c_cflag & CSIZE)
 	{
 		case CS5: printf(" CS5"); break;
