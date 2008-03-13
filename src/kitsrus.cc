@@ -8,7 +8,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: kitsrus.cc,v 1.10 2008/03/12 03:27:58 bfoz Exp $
+	$Id: kitsrus.cc,v 1.11 2008/03/13 18:49:08 bfoz Exp $
  * */
 #include <fcntl.h>
 #include <iostream>
@@ -185,7 +185,7 @@ namespace kitsrus
 		intelhex::hex_data::address_t	j(info.get_eeprom_start());
 		intelhex::hex_data::address_t	eeprom_start(info.get_eeprom_start());
 		intelhex::hex_data::address_t	eeprom_end;
-		uint16_t progress;
+		uint16_t progress(0);
 		intelhex::hex_data::size_type size;
 		
 		//Ideally we would figure out how many ROM words are going to be written
