@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: centralwidget.cc,v 1.21 2008/03/07 22:48:34 bfoz Exp $
+	$Id: centralwidget.cc,v 1.22 2008/03/14 19:23:16 bfoz Exp $
 */
 
 #include <iostream>
@@ -75,15 +75,7 @@ CentralWidget::CentralWidget() : QWidget()
 	QGridLayout	*Layout0 = new QGridLayout;
 	Layout0->addWidget(ProgrammerDeviceNodeLabel, 0, 0);
 	Layout0->addWidget(TargetTypeLabel, 1, 0);
-#ifdef	Q_OS_LINUX
-	ProgrammerDeviceNode->setMaxCount(1);
-	Layout0->addWidget(ProgrammerDeviceNode, 0, 1, 1, 2);
-	QPushButton	*DeviceBrowseButton = new QPushButton("Browse");
-	connect(DeviceBrowseButton, SIGNAL(clicked()), this, SLOT(device_browse()));
-	Layout0->addWidget(DeviceBrowseButton, 0, 3);
-#else	//Q_OS_LINUX
 	Layout0->addWidget(ProgrammerDeviceNode, 0, 2, 1, 2);
-#endif	//Q_OS_LINUX
 
 	Layout0->addWidget(TargetType, 1, 2, 1, 2);
 
@@ -235,30 +227,6 @@ void CentralWidget::browse()
 		settings.endArray();
 	}
 }
-
-#ifdef	Q_OS_LINUX
-
-void CentralWidget::device_browse()
-{
-	QString initdir;
-	if( ProgrammerDeviceNode->currentIndex() == -1 )
-		initdir = "/dev";
-	else
-		initdir = (ProgrammerDeviceNode->itemData(ProgrammerDeviceNode->currentIndex())).toString();
-	
-	QString directory = QFileDialog::getOpenFileName(this, tr("Open File"), initdir);
-	if( directory.size() != 0 )
-	{
-		QString str(directory);
-		str.remove(0, str.lastIndexOf('/')+1);	//Don't display leading path info
-		ProgrammerDeviceNode->clear();
-		ProgrammerDeviceNode->addItem(str, QVariant(directory));
-
-		settings.setValue("CentralWidget/DeviceCombo/Last/Text", directory);
-	}	
-}
-
-#endif	//Q_OS_LINUX
 
 //Load the chip info from the settings
 bool loadChipInfo(QString &part, chipinfo::chipinfo &chip_info)
@@ -828,13 +796,6 @@ bool CentralWidget::FillPortCombo()
 #endif	//Q_OS_DARWIN
 
 #ifdef	Q_WS_X11
-#	ifdef	Q_OS_LINUX
-bool CentralWidget::FillPortCombo()
-{
-}
-
-#	else	//Q_OS_LINUX
-
 //Enumerate the available ports and fill up the relevant combo box
 //	Returns true if a port is found, false otherwise
 bool CentralWidget::FillPortCombo()
@@ -843,8 +804,15 @@ bool CentralWidget::FillPortCombo()
 	if( !dir.exists() )
 		return false;
 
-	dir.setFilter(QDir::System);
-	QStringList 	names("cu*");
+	dir.setFilter(QDir::System | QDir::CaseSensitive);
+	QStringList 	names;
+
+#ifdef	Q_OS_LINUX
+	names << "ttyS*" << "ttyU*";
+#else
+	names << "cu*";
+#endif	//Q_OS_LINUX
+
 	dir.setNameFilters(names);
 	
 	QStringList devs = dir.entryList();
@@ -858,8 +826,6 @@ bool CentralWidget::FillPortCombo()
 	
 	return true;
 }	
-
-#endif	//Q_OS_LINUX
 
 #endif	//Q_WS_X11
 
