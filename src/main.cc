@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: main.cc,v 1.6 2007/09/02 23:06:06 bfoz Exp $
+	$Id: main.cc,v 1.7 2008/03/16 18:47:16 bfoz Exp $
 */
 
 #include<QApplication>
@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 #endif	//Q_OS_DARWIN
 
 	//These need to be set before QProg is constructed
-	QCoreApplication::setOrganizationName("bfoz");
+    QCoreApplication::setOrganizationName("bfoz.net");
 	QCoreApplication::setOrganizationDomain("bfoz.net");
 	QCoreApplication::setApplicationName("QProg");
 
