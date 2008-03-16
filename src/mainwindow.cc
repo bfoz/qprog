@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: mainwindow.cc,v 1.11 2007/09/17 03:17:33 bfoz Exp $
+	$Id: mainwindow.cc,v 1.12 2008/03/16 19:10:14 bfoz Exp $
 */
 
 #include <iostream>
@@ -162,9 +162,14 @@ void MainWindow::httpRequestFinished(int requestId, bool error)
 //	QMessageBox::information(this, tr("Download successful"), tr("%1 bytes read").arg(buffer->size()));
 //	printf("%s", buffer->data().data());
 
-	// Store the device info at the system level so the user can make
-	//  changes without corrupting the local copy of the database.
-	QSettings	settings(QSettings::SystemScope, "bfoz.net", "QProg");
+    // Store the server copy of the device info at the user,organization level 
+    //  so the user can make changes without corrupting the local copy
+    QSettings	settings(QCoreApplication::organizationName());
+
+    // Warn if the settings file isn't writable
+    if( !settings.isWritable() )
+	qWarning("Read Only Settings! You need write permission for %s", qPrintable(settings.fileName()));
+
 	// There's no need to beginGroup() here because the keys returned
 	//  by the server already have the group name included
 //	settings.beginGroup("DeviceInfo");
