@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: centralwidget.cc,v 1.22 2008/03/14 19:23:16 bfoz Exp $
+	$Id: centralwidget.cc,v 1.23 2008/03/22 17:39:09 bfoz Exp $
 */
 
 #include <iostream>
@@ -457,7 +457,7 @@ bool CentralWidget::doProgrammerInit(kitsrus::kitsrus_t& prog)
 	//Check the protocol version
 	std::string protocol = prog.get_protocol();
 
-	if( protocol != "P018" )
+	if( (protocol != "P018") && (protocol != "P18A") )
 	{
 		QMessageBox::critical(this, "Error", tr("Wrong protocol version ( %1 )").arg(QString(protocol.c_str())));
 		return false;
