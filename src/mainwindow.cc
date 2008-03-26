@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: mainwindow.cc,v 1.12 2008/03/16 19:10:14 bfoz Exp $
+	$Id: mainwindow.cc,v 1.13 2008/03/26 07:06:43 bfoz Exp $
 */
 
 #include <iostream>
@@ -102,7 +102,8 @@ void MainWindow::startup()
 
 void MainWindow::handleAbout()
 {
-	QMessageBox::about(this, "<center><b>QProg</b></center>", "<center>&copy; 2005-2007 Brandon Fosdick<br><a href=\"http://www.opensource.org/licenses/bsd-license.php\">BSD License</a><br><br><a href=\"http://bfoz.net/projects/qprog/\">http://bfoz.net/projects/qprog/</a></center>");
+    QMessageBox::about(this, tr("QProg %1").arg(QPROG_VERSION), 
+	tr("<p align=center><b>QProg %1</b></p><p align=center>&copy; 2005-2008 Brandon Fosdick<br><a href=\"http://www.opensource.org/licenses/bsd-license.php\">BSD License</a></p><p align=center><a href=\"http://bfoz.net/projects/qprog/\">http://bfoz.net/projects/qprog/</a></p>").arg(QPROG_VERSION));
 }
 
 /*	Update the device info stored in the settings
