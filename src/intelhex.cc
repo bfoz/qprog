@@ -8,7 +8,7 @@
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
 
-	$Id: intelhex.cc,v 1.12 2008/03/12 04:41:08 bfoz Exp $
+	$Id: intelhex.cc,v 1.13 2008/03/26 04:45:57 bfoz Exp $
  * */
 
 #include <iostream>
@@ -358,8 +358,13 @@ namespace intelhex
 					os << ":02000004";
 					os.width(4);
 					os << addr;	//Address
-					// checksum
-					os << "00";	// bogus checksum
+		    // Create a checksum for the linear address record
+		    checksum = 0x06 + addr + (addr >> 8);
+		    checksum = 0x01 + ~checksum;
+		    os.width(2);
+		    // OSX (or maybe GCC), seems unable to handle uint8_t 
+		    //  arguments to a stream
+		    os << static_cast<uint16_t>(checksum);	// Checksum byte
 					os << std::endl;
 					linear_address = addr;
  				}
@@ -371,8 +376,7 @@ namespace intelhex
 			checksum += i->second.size()*2;
 			os.width(4);
 			os << static_cast<uint16_t>(i->first*2);	//Address
-			checksum += static_cast<uint8_t>(i->first & 0x00FF);
-			checksum += static_cast<uint8_t>(i->first >> 8);
+	    checksum += (i->first * 2) + (i->first >> 7);
 			os << "00";											//Record type
 			for(unsigned j=0; j<i->second.size(); ++j)	//Store the data bytes, LSB first, ASCII HEX
 			{
@@ -385,8 +389,8 @@ namespace intelhex
 			}
 			checksum = 0x01 + ~checksum;
 			os.width(2);
-			//***	OSX (or maybe GCC) seems unable to handle uint8_t arguments to a stream
-			os << static_cast<uint16_t>(checksum);	//Bogus checksum byte
+	    // OSX (or maybe GCC), seems unable to handle uint8_t arguments to a stream
+	    os << static_cast<uint16_t>(checksum);	// Checksum byte
 			os << std::endl;
 		}
 		os << ":00000001FF\n";			//EOF marker
