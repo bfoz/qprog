@@ -5,6 +5,7 @@
 QPROG_VERSION = "0.4"
 TEMPLATE = app
 CONFIG	+= warn_on qt stl
+DEFINES += QPROG_VERSION=\"$${QPROG_VERSION}\"
 
 macx {
 	TARGET = QProg
