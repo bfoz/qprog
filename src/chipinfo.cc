@@ -9,7 +9,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: chipinfo.cc,v 1.3 2007/10/04 03:29:33 bfoz Exp $
+	$Id: chipinfo.cc,v 1.4 2008/03/30 04:02:22 bfoz Exp $
 */
 
 #include <iostream>
@@ -29,38 +29,20 @@ namespace chipinfo
 		else if(key=="EraseMode")
 			erase_mode = strtol(value.c_str(), NULL, 10);
 		else if(key=="FlashChip") {}
+	else if( key=="FastPowerSequence" )
+	    fast_power = (value=="1");
 		else if(key=="PowerSequence")
 		{
 			if(value=="Vcc")
 				power_sequence = 0;
 			else if(value=="VccVpp1")
 				power_sequence = 1;
-			else if(value=="VccFastVpp1")
-			{
-				power_sequence = 1;
-				fast_power = true;
-			}
 			else if(value=="VccVpp2")
 				power_sequence = 2;
-			else if(value=="VccFastVpp2")
-			{
-				power_sequence = 2;
-				fast_power = true;
-			}
 			else if(value=="Vpp1Vcc")
 				power_sequence = 3;
-			else if(value=="Vpp1FastVcc")
-			{
-				power_sequence = 3;
-				fast_power = true;
-			}
 			else if(value=="Vpp2Vcc")
 				power_sequence = 4;
-			else if(value=="Vpp2FastVcc")
-			{
-				power_sequence = 4;
-				fast_power = true;
-			}
 		}
 		else if(key=="ProgramDelay")
 			program_delay = strtol(value.c_str(), NULL, 10);
