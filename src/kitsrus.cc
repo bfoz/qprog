@@ -8,7 +8,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: kitsrus.cc,v 1.11 2008/03/13 18:49:08 bfoz Exp $
+	$Id: kitsrus.cc,v 1.12 2008/03/30 19:57:56 bfoz Exp $
  * */
 #include <fcntl.h>
 #include <iostream>
@@ -125,8 +125,8 @@ namespace kitsrus
 		uint16_t k;
 		intelhex::hex_data::size_type size;
 		
-		//Figure out how many ROM bytes need to be written
-		size = (1 + HexData.max_addr_below(info.rom_size-1))*2;
+		//Figure out how many ROM words need to be written
+		size = 1 + HexData.max_addr_below(info.rom_size-1);
 //		std::cout << __FUNCTION__ << ": size = " << size << std::endl;
 
 		//Send program rom command
