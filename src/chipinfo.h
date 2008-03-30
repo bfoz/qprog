@@ -9,7 +9,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: chipinfo.h,v 1.4 2008/03/07 01:15:18 bfoz Exp $
+	$Id: chipinfo.h,v 1.5 2008/03/30 20:23:23 bfoz Exp $
 */
 
 #ifndef	CHIPINFO_H
@@ -36,7 +36,7 @@ namespace chipinfo
 		#define	EEPROM_START_14BIT	0x2100
 		#define	EEPROM_START_16BIT	0xF0000
 		
-		#define	CONFIG_START_12BIT	0x2007		
+	#define	CONFIG_START_12BIT	0x0FFF
 		#define	CONFIG_START_14BIT	0x2007		
 		#define	CONFIG_START_16BIT	0x300000
 
@@ -79,7 +79,12 @@ namespace chipinfo
 		bool	single_panel;
 
 		bool	set(std::string, std::string);
-		
+
+	bool	is12bit()
+	{
+	    return (core_type == Core12_A) || (core_type == Core12_B);
+	}
+
 		bool	is14bit();
 		bool	is16bit();
 		

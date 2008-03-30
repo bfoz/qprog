@@ -9,7 +9,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: chipinfo.cc,v 1.4 2008/03/30 04:02:22 bfoz Exp $
+	$Id: chipinfo.cc,v 1.5 2008/03/30 20:23:23 bfoz Exp $
 */
 
 #include <iostream>
@@ -203,23 +203,27 @@ namespace chipinfo
 			return EEPROM_START_14BIT;
 	}
 
-	uint32_t	chipinfo::get_config_start()
-	{
-		if( (core_type==Core16_C) || (core_type==Core16_A) || (core_type==Core16_B))
-			return CONFIG_START_16BIT;
-		else
-			return CONFIG_START_14BIT;
-	}
+    uint32_t	chipinfo::get_config_start()
+    {
+	if( (core_type==Core12_A) || (core_type==Core12_B) )
+	    return CONFIG_START_12BIT;
+	else if( (core_type==Core16_C) || (core_type==Core16_A) || (core_type==Core16_B) )
+	    return CONFIG_START_16BIT;
+	else
+	    return CONFIG_START_14BIT;
+    }
 
-	uint32_t	chipinfo::get_id_start()
-	{
-		if( is16bit() )
-			return ID_START_16BIT;
-		else if( is14bit() )
-			return ID_START_14BIT;
-		else
-			return 0;	//FIXME
-	}
+    uint32_t	chipinfo::get_id_start()
+    {
+	if( is12bit() )
+	    return rom_size;	// ID locations immediately follow program words
+	else if( is14bit() )
+	    return ID_START_14BIT;
+	else if( is16bit() )
+	    return ID_START_16BIT;
+	else
+	    return 0;	//FIXME
+    }
 
 	uint32_t	chipinfo::get_blank_value()
 	{

@@ -8,7 +8,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: kitsrus.cc,v 1.12 2008/03/30 19:57:56 bfoz Exp $
+	$Id: kitsrus.cc,v 1.13 2008/03/30 20:23:23 bfoz Exp $
  * */
 #include <fcntl.h>
 #include <iostream>
@@ -381,14 +381,16 @@ namespace kitsrus
 				return false;
 //			std::cout << __FUNCTION__ << ": read " << std::hex << a[i] << "\n";
 		}
-		
-		if(info.is14bit())
-		{
-			HexData[0x2000] = a[2];
-			HexData[0x2001] = a[3];
-			HexData[0x2002] = a[4];
-			HexData[0x2003] = a[5];
-		}
+
+	// Store the config bytes
+	if( info.is12bit() || info.is14bit() )
+	{
+	    intelhex::hex_data::address_t j(info.get_id_start());
+	    HexData[j++] = a[2];
+	    HexData[j++] = a[3];
+	    HexData[j++] = a[4];
+	    HexData[j++] = a[5];
+	}
 
 		intelhex::hex_data::address_t j(info.get_config_start());
 		if( j == 0 )	// Config bits are never at address zero
