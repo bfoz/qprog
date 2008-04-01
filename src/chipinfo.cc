@@ -9,7 +9,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: chipinfo.cc,v 1.5 2008/03/30 20:23:23 bfoz Exp $
+	$Id: chipinfo.cc,v 1.6 2008/04/01 04:07:45 bfoz Exp $
 */
 
 #include <iostream>
@@ -22,7 +22,7 @@ namespace chipinfo
 	
 	bool chipinfo::set(std::string key, std::string value)
 	{
-		if(key=="CHIPname")
+		if( (key=="CHIPname") || (key=="Name") )
 			name = value;
 		else if(key=="INCLUDE") {}
 		else if(key=="SocketImage") {}
@@ -157,6 +157,9 @@ namespace chipinfo
 		else if(key=="SocketImageType")	{}
 		else if(key=="Status")	{}
 		else if( equal(key_ConfigWordDescriptions.begin(), key_ConfigWordDescriptions.end(), key.begin()) )	{}
+		else if ( (key=="ID") || 	// Keys to ignore
+			  (key=="CreateTimeStamp") 
+			) {}
 		else
 		{
 			std::cout << "Unrecognized key: " << key << " => " << value << std::endl;
