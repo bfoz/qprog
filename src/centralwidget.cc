@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: centralwidget.cc,v 1.23 2008/03/22 17:39:09 bfoz Exp $
+	$Id: centralwidget.cc,v 1.24 2008/04/01 04:12:19 bfoz Exp $
 */
 
 #include <iostream>
@@ -685,23 +685,10 @@ void CentralWidget::bulk_erase()
 	//Put this in a block to close the serial port early
 	{
 		kitsrus::kitsrus_t	prog(path, chip_info);	//Programmer interface
-		
-		if( !prog.open() )			//Open the port
-		{
-			QMessageBox::critical(this, "Error", "Could not open serial port");
-			return;
-		}
-		if( !do_reset(prog) )			//Reset the programmer
-			return;
-		
-		//Check the protocol version
-		std::string protocol = prog.get_protocol();
-		if( protocol != "P018" )
-		{
-			QMessageBox::critical(this, "Error", tr("Wrong protocol version ( %1 )").arg(QString(protocol.c_str())));
-			return;
-		}
-		
+
+	if( !doProgrammerInit(prog) )
+	    return;
+
 		do_erase(prog);		//Do the erase	
 	}
 
