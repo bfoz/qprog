@@ -39,8 +39,7 @@ macx {
 
 	LIBS += -framework IOKit -framework CoreServices
 	LIBS += -framework Sparkle -framework Carbon
-	CONFIG += ppc #x86 ppc
-	QMAKE_MAC_SDK=/Developer/SDKs/MacOSX10.4u.sdk
+	CONFIG += x86 ppc
 	QMAKE_INFO_PLIST = Info.plist
 	QMAKE_POST_LINK = "sed -e s/@@version@@/$${QPROG_VERSION}/g -i '' QProg.app/Contents/Info.plist"
 }
