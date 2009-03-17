@@ -26,6 +26,8 @@ QT += network
 # Input
 HEADERS += src/mainwindow.h src/centralwidget.h src/intelhex.h 
 SOURCES += src/main.cc src/mainwindow.cc src/centralwidget.cc src/intelhex.cc
+HEADERS	+= include/delegate.h
+SOURCES	+= src/delegate.cc
 
 HEADERS	+= src/kitsrus.h
 SOURCES	+= src/kitsrus.cc

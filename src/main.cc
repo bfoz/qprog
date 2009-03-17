@@ -6,7 +6,7 @@
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
 
-	$Id: main.cc,v 1.7 2008/03/16 18:47:16 bfoz Exp $
+	$Id: main.cc,v 1.8 2009/03/17 06:01:13 bfoz Exp $
 */
 
 #include<QApplication>
@@ -15,7 +15,10 @@
 #include "carbon_cocoa.h"
 #endif	//Q_OS_DARWIN
 
+#include "delegate.h"
 #include "mainwindow.h"
+
+Delegate delegate;
 
 int main(int argc, char *argv[])
 {
@@ -30,11 +33,8 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationDomain("bfoz.net");
 	QCoreApplication::setApplicationName("QProg");
 
-	MainWindow mainwin;
+    // Post a startup event to the application delegate
+    app.postEvent(&delegate, new QEvent((QEvent::Type)Delegate::Startup), Qt::LowEventPriority);
 
-	// Post a startup event to the main window
-	app.postEvent(&mainwin, new QEvent((QEvent::Type)MainWindow::Startup), Qt::LowEventPriority);
-
-	mainwin.show();
 	return app.exec();
 }
