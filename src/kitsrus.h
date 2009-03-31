@@ -8,7 +8,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: kitsrus.h,v 1.4 2007/07/16 00:07:11 bfoz Exp $
+	$Id: kitsrus.h,v 1.5 2009/03/31 05:21:30 bfoz Exp $
  * */
 
 #ifndef KITSRUS_H
@@ -28,7 +28,6 @@
 
 namespace kitsrus
 {
-
 	class kitsrus_t
 	{
 		//Kitsrus Commands
@@ -154,7 +153,7 @@ public:
 		void	write_18F_fuse();
 		bool	detect_chip();
 		int	get_version();
-		
+
 		void set_callback(callback_t f, void *p)	//Function and pointer to pass to function
 		{
 			callback = f;
@@ -168,7 +167,7 @@ public:
 	#define	CMD_WR_CAL_10F			0x18
 */
 		std::string	get_protocol();
-		std::string kit_name();
+	const char *const firmwareName();
 		rom_size_type	get_rom_size() {return info.rom_size; }
 		eeprom_size_type	get_eeprom_size() {return info.eeprom_size; }
 		uint32_t	get_eeprom_start() {return info.get_eeprom_start(); }

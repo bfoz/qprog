@@ -8,7 +8,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: kitsrus.cc,v 1.13 2008/03/30 20:23:23 bfoz Exp $
+	$Id: kitsrus.cc,v 1.14 2009/03/31 05:21:30 bfoz Exp $
  * */
 #include <fcntl.h>
 #include <iostream>
@@ -16,13 +16,23 @@
 #include "kitsrus.h"
 #include "intelhex.h"
 
+static const char* firmwareNames[] =
+{
+    "Kit 128",
+    "Kit 149A",
+    "Kit 149B",
+    "Kit 150",
+    "Kit 170",
+    "Kit 182"
+};
+
 namespace kitsrus
 {
 #ifndef	Q_WS_WIN
 	#define	HIBYTE(a)	(uint8_t)(a>>8)
 	#define	LOBYTE(a)	(uint8_t)(a&0x00FF)
 #endif	//Q_WS_WIN
-
+    
 	//Switch from power-on mode to command mode
 	bool kitsrus_t::command_mode()
 	{
@@ -59,7 +69,8 @@ namespace kitsrus
 
 		if( read()=='B' )
 		{
-			read();	//Ignore the firmware type
+	    firmware = read();	//Ignore the firmware type
+	    qDebug("Found Firmware Type=%X '%s'\n", firmware, firmwareName());
 			return true;
 		}
 		else
@@ -451,28 +462,12 @@ namespace kitsrus
 		return s;
 	}
 
-	std::string kitsrus_t::kit_name()
-	{
-		switch(firmware)
-		{
-			case KIT_128:
-				return "Kit 128";
-			case KIT_149A:
-				return "Kit 149A";
-			case KIT_149B:
-				return "Kit 149B";
-			case KIT_150:
-				return "Kit 150";
-			case KIT_170:
-				return "Kit 170";
-			case KIT_182:
-				return "Kit 182";
-			case KIT_185:
-				return "Kit 185";
-			default:
-				return "Unknown";
-		}
-	}
+    const char *const  kitsrus_t::firmwareName()
+    {
+	if( (firmware >= 0) && (firmware < (int)(sizeof(firmwareNames)/sizeof(char*))) )
+	    return firmwareNames[firmware];
+	return NULL;
+    }
 
 	//Ugly kludge to work around the K149 reset logic
 	//	This function is only used to set the firmware type for reset purposes
