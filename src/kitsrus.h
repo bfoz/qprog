@@ -8,7 +8,7 @@
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
 
-	$Id: kitsrus.h,v 1.5 2009/03/31 05:21:30 bfoz Exp $
+	$Id: kitsrus.h,v 1.6 2009/04/01 03:39:50 bfoz Exp $
  * */
 
 #ifndef KITSRUS_H
@@ -85,11 +85,14 @@ namespace kitsrus
 			return com.write(&d, 1);
 		}
 
-		uint8_t	read()
+	int16_t	read()
 		{
 			char c;
 			if( com.read(&c,1) != 1 )
-				std::cout << "read error\n";
+	    {
+		std::cerr << "read error\n";
+		return -1;
+	    }
 #ifdef DEBUG
 			if( isalnum(c) )
 				printf("read \"%c\"\n", c);
