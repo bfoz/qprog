@@ -1,0 +1,232 @@
+<html>
+	<head>
+		<title>QProg PIC Programmer</title>
+	</head>
+
+	<body>
+		<div style="text-align:center">
+			<h1>QProg PIC Programmer</a></h1>
+			<img border=1 src="http://bfoz.net/projects/qprog/QProg_0.3.png">
+		</div>
+		<div id="content">
+			<p>QProg is an OS X, Windows, and *nix/X11 compatible software interface to the popular DIY line of PIC programmers sold by <a href="http://kitsrus.com/">Kitsrus</a> and is intended to be a cross-platform replacement for the software provided with the DIY kits. </p>
+
+			<p>After writing the <a href="http://bfoz.net/projects/projects/pocket/">Pocket</a> software I received a few requests for a GUI version, and I finally got around to writing it. QProg is the result. Bear in mind that I whipped this up pretty fast (it only took two weekends to write the first version) so it may have a few rough edges.</p>
+
+			<h2>Supported Platforms</h2>
+			<p>QProg is written using the Open Source <a href="http://www.trolltech.com/products/qt/index.html">Qt</a> toolkit and therefore should run on any platform that Qt runs on. Development is primarily on FreeBSD and MacOS X, although it should work just as well on Windows or any POSIX compliant system (Linux, etc).</p>
+
+			<h2>Supported Programmers</h2>
+			<p>Currently, all of the <a href="http://kitsrus.com/">Kitsrus</a> programmers utilizing protocol  <a href="http://bfoz.net/projects/pocket/diy_protocol_p018.html">P018</a> are supported.</p>
+
+			<h2>License</h2>
+			<p>QProg and it's associated source code are Copyright 2005-2007 Brandon Fosdick and released under the <a href="http://www.opensource.org/licenses/bsd-license.php">BSD License</a>.</p>
+
+			<h2>Download</h2>
+
+			<a href="http://bfoz.net/projects/pocket/PartsDB/export.php?format=extattr&noprefix=1">Chip Info File</a> (In case QProg can't get to it for some reason)
+
+			<h3>Latest Version (v0.4)</h3>
+			<ul>
+				<li><a href="http://bfoz.net/projects/qprog/release/QProg_0.4.dmg">MacOS X</a></li>
+				<li><a href="http://bfoz.net/projects/qprog/release/QProg_0.4.zip">Windows Binary (zipped)</a></li>
+				<li><a href="http://bfoz.net/projects/qprog/release/QProg_0.4.tgz">Source</a></li>
+			</ul>
+
+			<h2>Installation</h2>
+			<p>Follow the instructions below for your platform. Then, when using QProg for the first time, run the Update command in the Chip Info menu to retrieve the necessary chip info records. That's it. Let me know if you have any problems</p>
+			<ul>
+				<li>Mac OS X
+					<p>
+						<ol>
+							<li>Install the FTDI <a href="http://ftdichip.com/Drivers/VCP.htm">drivers</a> if you haven't already</li>
+							<li>Install <a href="http://trolltech.com/developer/downloads/qt/mac">Qt4</a> if you haven't already.
+							<li>Open the disk image and drag the QProg icon to your Applications folder</li>
+						</ol>
+					</p>
+				</li>
+
+				<li>Windows NT/2K/XP
+					<p>
+						<ol>
+							<li>Install the FTDI <a href="http://ftdichip.com/Drivers/VCP.htm">drivers</a> if you haven't already</li>
+							<li>Then, either extract the QProg archive to your Program Files folder or manually place the executable someplace more convenient (such as a folder on your Desktop).</li>
+						</ol>
+					</p>
+				</li>
+
+				<li><a href="http://freebsd.org">FreeBSD</a>
+					<p>As root...
+					<ol>
+						<li>cd /usr/ports/devel/qprog</li>
+						<li>make install clean</li>
+					</ol></p>
+				</li>
+				<li>Linux, etc
+				<p>I don't have a Linux box of any flavor so there's no way for me to generate any of the multitudinous package types. So, you'll have to compile and install manually. If you do manage to make a package please send it to me and I'll post it here.</p>
+				<p>First you'll need to have Qt4 (or later) installed
+					<ol>
+						<li><a href="http://www.trolltech.com/download/qt/x11.html">Download</a> and untar</li>
+						<li>Follow the instructions in <a href="ftp://ftp.trolltech.com/qt/source/INSTALL">INSTALL</a></li>
+					</ol>
+				</p>
+				<p>Now compile QProg...
+					<ol>
+						<li>tar zxf qprog.tgz</li>
+						<li>cd qprog</li>
+						<li>qmake</li>
+						<li>make</li>
+						<li>Copy the executable (qprog) to someplace in your path</li>
+					</ol>
+				</p></li>
+			</ul>
+
+			<h2>Todo</h2>
+			<ul>
+				<li>Add support for a serial boootloader</li>
+				<li>Allow submitting device info to the server</li>
+				<li>If configured to talk to a serial bootloader and the serial device is actually a USB converter, add the ability to send a reset command to the device for getting to the bootloader.</li>
+				<li>Add support for HID style USB bootloaders</li>
+			</ul>
+
+			<h2>History</h2>
+			<p>Version 0.5 - Pending [ <a href="http://bfoz.net/projects/qprog/release/QProg_0.5.dmg">OS X</a> | <a href="http://bfoz.net/projects/qprog/release/QProg_0.5.zip">Windows</a> | <a href="http://bfoz.net/projects/qprog/release/QProg_0.5.tgz">Source</a> ]
+				<ul>
+					<li>Planned Changes
+						<ul>
+							<li>Chip Info viewer/editor</li>
+							<li>Support for reading and writing FTDI USB to serial converter EEPROM settings</li>
+						</ul>
+					</li>
+					<li>Installation Notes
+					</li>
+					<li>Known Issues</li>
+					<ul>
+						<li>None so far</li>
+					</ul>
+				</ul>
+			</p>
+
+			<p>Version 0.4 - Released July 23, 2007 [ <a href="http://bfoz.net/projects/qprog/release/QProg_0.4.dmg">OS X</a> | <a href="http://bfoz.net/projects/qprog/release/QProg_0.4.zip">Windows</a> | <a href="http://bfoz.net/projects/qprog/release/QProg_0.4.tgz">Source</a> ]
+				<ul>
+					<li>Changes
+						<ul>
+							<li>OSX: Automatic update checking using the <a href="http://sparkle.andymatuschak.org/">Sparkle framework</a></li>
+							<li>OSX: Qt4 is back to being dynamically linked because Trolltech now provides an installer for OSX.</li>
+							<li>Upgrade to <a href="http://qextserialport.sourceforge.net/">QextSerialPort</a> 1.1</li>
+						</ul>
+					</li>
+					<li>Installation Notes
+						<ul>
+							<li>MacOS X requires Qt4 to be installed first</li>
+							<li>FreeBSD now has a port (devel/qprog)</li>
+						</ul>
+					</li>
+					<li>Known Issues</li>
+					<ul>
+						<li>None so far</li>
+					</ul>
+				</ul>
+			</p>
+
+			<p>Version 0.3 - Released March 3, 2006 [ <a href="http://bfoz.net/projects/qprog/release/QProg_0.3.dmg">OS X</a> | <a href="http://bfoz.net/projects/qprog/release/QProg_0.3.zip">Windows</a> | <a href="http://bfoz.net/projects/qprog/release/QProg_0.3.tgz">Source</a> ]
+				<ul>
+					<li>Changes
+						<ul>
+							<li>OSX: "New window on read" functionality added and enabled</li>
+							<li>Last used programmer device is saved across sessions</li>
+							<li>Remembers last five opened files</li>
+							<li>Verify after program enabled</li>
+							<li>Browse button opens directory of previously selected file, if any</li>
+							<li>Verify button is enabled and functioning</li>
+							<li>Linux: Programmer device node must be selected manually</li>
+							<li>Checkbox states are saved across sessions</li>
+							<li>Added a QSettings object to CentralWidget to speed up state changes</li>
+						</ul>
+					</li>
+					<li>Installation Notes
+						<ul>
+							<li>Windows and MacOS X no longer require Qt4 (statically linked)</li>
+							<li>All other supported platforms require <a href="http://www.trolltech.com/download/qt/mac.html">Qt4</a></li>
+						</ul>
+					</li>
+					<li>Known Issues</li>
+					<ul>
+						<li>None so far</li>
+					</ul>
+				</ul>
+			</p>
+
+			<p>Version 0.2.1 - Released January 29, 2006 [ <a href="http://bfoz.net/projects/qprog/release/QProg_0.2_static.zip">Windows</a> ]
+				<ul>
+					<li>This is a bug-fix release for Windows only. Other platforms are still at Version 0.2</li>
+					<li>Changes</li>
+					<ul>
+						<li>Fixed a blocking I/O bug in QextSerialPort that only affected the Windows version</li>
+						<li>Completely static linkage; no more external libraries</li>
+						<li>Forcefully disable programming voltage after bulk erase</li>
+					</ul>
+					<li>Installation Notes
+						<ul>
+							<li>Windows no longer requires Qt4 (statically linked)</li>
+							<li>Other platforms should use previous version</li>
+						</ul>
+					</li>
+					<li>Known Issues</li>
+					<ul>
+						<li>If it's not listed as fixed, it's still an issue</li>
+					</ul>
+				</ul>
+			</p>
+
+			<p>Version 0.2 - Released January 26, 2006 [ <a href="http://bfoz.net/projects/qprog/release/QProg_0.2.dmg">OS X</a> | Windows (<a href="http://bfoz.net/projects/qprog/release/QProg_0.2_static.zip">Static</a>, <a href="http://bfoz.net/projects/qprog/release/QProg_0.2.zip">Shared</a>) | <a href="http://bfoz.net/projects/qprog/release/QProg_0.2.tgz">Source</a> ]
+				<ul>
+					<li>Changes</li>
+					<ul>
+						<li>Added a statically linked version for win32 users who don't want to install Qt</li>
+						<li>Chip info can be updated from a file downloaded from http://bfoz.net/projects/qprog/</li>
+						<li>"New window on read" has been disabled until supporting code is written</li>
+						<li>Read and Program now display progress dialogs</li>
+						<li>A file dialog is presented when "Program" is clicked with no file selected</li>
+						<li>Added an About menu item and a very basic dialog</li>
+						<li>All instances of u_int8_t in kitsrus.cc replaced with uint8_t (for win32)</li>
+						<li>Functions program_all, read and bulk_erase now error out on a bad reset</li>
+						<li>kitsrus_t::open() now calls setTimeout(0,0) (for win32 compatability)</li>
+						<li>Call Sleep() instead of usleep() on Win32</li>
+					</ul>
+					<li>Installation Notes
+						<ul>
+							<li>OSX, FreeBSD, Linux: Requires <a href="http://www.trolltech.com/download/qt/mac.html">Qt4</a></li>
+						</ul>
+					</li>
+					<li>Known Issues
+					<ul>
+						<li>Intermittent serial port errors on Windows</li>
+					</ul></li>
+				</ul>
+			</p>
+
+			<p>Version 0.1 - Released January 18, 2006 [ <a href="http://bfoz.net/projects/qprog/release/QProg_0.1.dmg">OS X</a> | <a href="http://bfoz.net/projects/qprog/release/QProg_0.1.zip">Windows</a> | <a href="http://bfoz.net/projects/qprog/release/QProg_0.1.tgz">Source</a> ]
+				<ul>
+					<li>Initial Release</li>
+					<li>Installation Notes
+						<ul>
+							<li>All platforms: Requires <a href="http://www.trolltech.com/download/qt/mac.html">Qt4</a></li>
+						</ul>
+					</li>
+					<li>Known Issues</li>
+					<ul>
+						<li>"Verify" button doesn't work yet</li>
+						<li>"Verify after programming"  functionality hasn't been written yet</li>
+						<li>"Open new window on read"  functionality hasn't been written yet</li>
+						<li>Reprogram on file change functionality hasn't been written yet</li>
+						<li>Last used port isn't saved between sessions</li>
+						<li>Last opened file isn't save between sessions</li>
+						<li>No progress indicator during read/program operations</li>
+						<li>Missing "About" menu item and dialog</li>
+					</ul>
+				</ul>
+			</p>
+		</div>	<!-- id='content' -->
+	</body>
+</html>
