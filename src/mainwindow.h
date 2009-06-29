@@ -5,8 +5,6 @@
 	Created January 6, 2006 by Brandon Fosdick
 	
 	Copyright 2006 Brandon Fosdick (BSD License)
-
-	$Id: mainwindow.h,v 1.7 2009/03/17 06:01:13 bfoz Exp $
 */
 
 #ifndef	MAINWINDOW_H

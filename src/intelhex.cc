@@ -6,9 +6,6 @@
 	This code is made available to the public under a BSD-like license, a copy of which
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
-
-
-	$Id: intelhex.cc,v 1.13 2008/03/26 04:45:57 bfoz Exp $
  * */
 
 #include <iostream>

@@ -7,8 +7,6 @@
 	This code is made available to the public under a BSD-like license, a copy of which
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
-
-	$Id: kitsrus.cc,v 1.14 2009/03/31 05:21:30 bfoz Exp $
  * */
 #include <fcntl.h>
 #include <iostream>

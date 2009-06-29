@@ -5,8 +5,6 @@
 	Created December 17, 2005 by Brandon Fosdick
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
-
-	$Id: centralwidget.cc,v 1.24 2008/04/01 04:12:19 bfoz Exp $
 */
 
 #include <iostream>

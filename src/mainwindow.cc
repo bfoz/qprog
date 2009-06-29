@@ -5,8 +5,6 @@
 	Created January 6, 2006 by Brandon Fosdick
 	
 	Copyright 2005 Brandon Fosdick (BSD License)
-
-	$Id: mainwindow.cc,v 1.14 2009/03/17 06:01:13 bfoz Exp $
 */
 
 #include <iostream>

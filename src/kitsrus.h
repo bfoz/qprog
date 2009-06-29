@@ -7,8 +7,6 @@
 	This code is made available to the public under a BSD-like license, a copy of which
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
-
-	$Id: kitsrus.h,v 1.6 2009/04/01 03:39:50 bfoz Exp $
  * */
 
 #ifndef KITSRUS_H

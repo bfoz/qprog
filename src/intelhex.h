@@ -6,8 +6,6 @@
 	This code is made available to the public under a BSD-like license, a copy of which
 	should have been provided with this code in the file LICENSE. For a copy of the BSD 
 	license template please visit http://www.opensource.org/licenses/bsd-license.php
-
-	$Id: intelhex.h,v 1.5 2008/03/12 04:42:25 bfoz Exp $
 * */
 
 #ifndef INTELHEXH

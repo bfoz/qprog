@@ -4,7 +4,6 @@
     Created	March 15, 2009	Brandon Fosdick <bfoz@bfoz.net>
 
     Copyright 2005 Brandon Fosdick (BSD License)
-    $Id: delegate.h,v 1.1 2009/03/17 06:01:13 bfoz Exp $
 */
 
 #ifndef	DELEGATE_H
