@@ -1,10 +1,6 @@
 /*  Routines for reading/writing Intel INHX8M and INHX32 files
 
-    Copyright (c) 2002, Terran Development Corporation
-    All rights reserved.
-    This code is made available to the public under a BSD-like license, a copy of which
-    should have been provided with this code in the file LICENSE. For a copy of the BSD 
-    license template please visit http://www.opensource.org/licenses/bsd-license.php
+    Copyright 2002 Brandon Fosdick (BSD License)
 */
 
 #ifndef INTELHEXH
@@ -22,7 +18,7 @@ namespace intelhex
     #define	HEX_FORMAT_INHX8M	0x01
     #define	HEX_FORMAT_INHX32	0x02
 
-    
+
     //The data set that results from parsing a hex file
     struct hex_data
     {
@@ -37,7 +33,7 @@ namespace intelhex
 	typedef	lst_dblock::iterator	iterator;
 	typedef	lst_dblock::reverse_iterator	reverse_iterator;
 	typedef	data_container::size_type	size_type;
-    private:		
+    private:
 	char	format;				//Format of the parsed file (necessary?)
 	bool	segment_addr_rec;		// Uses/Has a segment address record
 	bool	linear_addr_rec;		// Uses/Has a linear address record
@@ -60,12 +56,12 @@ namespace intelhex
 	size_type   size_below_addr(address_t);
 	size_type   size_in_range(address_t, address_t);    //number of words in [lo, hi)
 	address_t   max_addr_below(address_t);
-	
+
 	bool	isset(address_t);
-	
+
 	element_t   &operator[](address_t);	//Array access operator
 	element_t   get(address_t, element_t);	//FIXME	Nasty kludge
-	
+
 	dblock	*new_block();				//Extend the array by one block
 	dblock	*add_block(address_t, size_type, element_t = 0xFFFF);	//Append a new block with address/length
 	bool	load(const char *);			//Load a hex file from disk

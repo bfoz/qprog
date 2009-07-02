@@ -1,11 +1,7 @@
 /*  Interface to Tony Nixon's PIC Programmers via the Kitsrus protocol
     This works for Kits 128, 149A, 149B, 150, 182
 
-    Copyright (c) 2005, Terran Development Corporation
-    All rights reserved.
-    This code is made available to the public under a BSD-like license, a copy of which
-    should have been provided with this code in the file LICENSE. For a copy of the BSD
-    license template please visit http://www.opensource.org/licenses/bsd-license.php
+    Copyright 2005 Brandon Fosdick (BSD License)
 */
 
 #ifndef KITSRUS_H

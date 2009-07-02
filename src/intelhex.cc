@@ -1,10 +1,6 @@
 /*  Routines for reading/writing Intel INHX8M and INHX32 files
 
-    Copyright (c) 2002, Terran Development Corporation
-    All rights reserved.
-    This code is made available to the public under a BSD-like license, a copy of which
-    should have been provided with this code in the file LICENSE. For a copy of the BSD 
-    license template please visit http://www.opensource.org/licenses/bsd-license.php
+    Copyright 2002 Brandon Fosdick (BSD License)
 */
 
 #include <iostream>
@@ -78,7 +74,7 @@ namespace intelhex
 	// If no block can be found, return the blank value
 	if( i == blocks.rend() )
 	    return blank;
-	
+
 	element_t relative_addr = addr - i->first;
 	// If relative_addr is past the end of the block, return blank
 	if( relative_addr >= i->second.size() )
@@ -106,18 +102,18 @@ namespace intelhex
     hex_data::size_type hex_data::size()
     {
 	size_type s=0;
-	
+
 	for(iterator i=blocks.begin(); i!=blocks.end(); ++i)
 	    s += i->second.size();
 
-	return s;		
+	return s;
     }
 
     // Returns the number of populated elements with addresses less than addr
     hex_data::size_type hex_data::size_below_addr(address_t addr)
     {
 	size_type s=0;
-	
+
 	for(iterator i=blocks.begin(); i!=blocks.end(); ++i)
 	{
 	    if( (i->first + i->second.size()) < addr)
@@ -126,7 +122,7 @@ namespace intelhex
 		s += addr - i->first;
 	}
 
-	return s;		
+	return s;
     }
 
     // number of words in [lo, hi)
@@ -151,14 +147,14 @@ namespace intelhex
 	    }
 	}
 
-	return s;		
+	return s;
     }
 
     // Return the max address of all of the set words with addresses less than or equal to hi
     hex_data::address_t hex_data::max_addr_below(address_t hi)
     {
 	address_t s=0;
-	
+
 	for(iterator i=blocks.begin(); i!=blocks.end(); ++i)
 	{
 	    if( i->first <= hi)
@@ -171,7 +167,7 @@ namespace intelhex
 	if( s > hi )
 	    return hi;
 	else
-	    return s;		
+	    return s;
     }
 
     //Return true if an element exists at addr
@@ -205,7 +201,7 @@ namespace intelhex
 	}
 
 	clear();		//First, clean house
-	
+
 	// Start parsing the file
 	while(!feof(fp))
 	{
@@ -217,7 +213,7 @@ namespace intelhex
 
 		unsigned numWords(count/2);	//Convert byte count to word count
 		address /= 2;			//Byte address to word address
-		
+
 		switch(rtype)	//What type of record?
 		{
 		    case 0: 	//Data block so store it
@@ -294,7 +290,7 @@ namespace intelhex
 	os.setf(std::ios::hex, std::ios::basefield);	//Set the stream to ouput hex instead of decimal
 	os.setf(std::ios::uppercase);			//Use uppercase hex notation
 	os.fill('0');					//Pad with zeroes
-	
+
 	//If we already know that this is an INHX32M file, start with a segment address record
 	//	otherwise check all of the blocks just to make sure
 	if( linear_addr_rec )
@@ -332,7 +328,7 @@ namespace intelhex
 		    checksum = 0x06 + addr + (addr >> 8);
 		    checksum = 0x01 + ~checksum;
 		    os.width(2);
-		    // OSX (or maybe GCC), seems unable to handle uint8_t 
+		    // OSX (or maybe GCC), seems unable to handle uint8_t
 		    //  arguments to a stream
 		    os << static_cast<uint16_t>(checksum);	// Checksum byte
 		    os << std::endl;
@@ -378,7 +374,7 @@ namespace intelhex
 		iterator j(i);
 		j = blocks.insert(++j, dblock());
 		j->first = i->first + len;		//Give the new block an address
-		
+
 		//Make an interator that points to the first element to copy out of i->second
 		dblock::second_type::iterator k(i->second.begin());
 		advance(k, len);
