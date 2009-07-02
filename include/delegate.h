@@ -1,5 +1,4 @@
-/*  Filename: delegate.h
-    QProg application delegate
+/*  QProg application delegate
 
     Created	March 15, 2009	Brandon Fosdick <bfoz@bfoz.net>
 

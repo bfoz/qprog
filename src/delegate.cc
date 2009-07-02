@@ -1,8 +1,7 @@
-/*  Filename: delegate.h
-    QProg application delegate
- 
+/*  QProg application delegate
+
     Created	March 15, 2009	Brandon Fosdick <bfoz@bfoz.net>
- 
+
     Copyright 2005 Brandon Fosdick (BSD License)
 */
 
@@ -91,7 +90,7 @@ void Delegate::getDeviceInfo()
 {
     if( !buffer )
 	buffer = new QBuffer;
-    
+
     progressDialog = new QProgressDialog();
     progressDialog->setWindowTitle("Updating device info");
     progressDialog->setCancelButtonText("Cancel");
@@ -155,7 +154,7 @@ void Delegate::httpRequestFinished(int requestId, bool error)
 	POST_STARTUP_DID_FAIL;
 	return;
     }
-    
+
     if(error)
     {
 	QMessageBox::information(NULL, tr("HTTP"), tr("Download failed"));
@@ -164,14 +163,14 @@ void Delegate::httpRequestFinished(int requestId, bool error)
 	return;
     }
 
-    // Store the server copy of the device info at the user,organization level 
+    // Store the server copy of the device info at the user,organization level
     //  so the user can make changes without corrupting the local copy
     QSettings	settings(QCoreApplication::organizationName());
-    
+
     // Warn if the settings file isn't writable
     if( !settings.isWritable() )
 	qWarning("Read Only Settings! You need write permission for %s", qPrintable(settings.fileName()));
-    
+
     // There's no need to beginGroup() here because the keys returned
     //  by the server already have the group name included
     //	settings.beginGroup("DeviceInfo");
@@ -195,7 +194,7 @@ void Delegate::httpRequestFinished(int requestId, bool error)
     msgBox.setStandardButtons(QMessageBox::Ok);
     msgBox.setDefaultButton(QMessageBox::Ok);
     msgBox.exec();
-    
+
     POST_STARTUP_DID_FINISH;
 }
 
@@ -224,7 +223,7 @@ void Delegate::updateProgress(int bytesRead, int totalBytes)
 {
     if(httpRequestAborted)
 	return;
-    
+
     progressDialog->setMaximum(totalBytes);
     progressDialog->setValue(bytesRead);
 }

@@ -1,10 +1,9 @@
-/*	Filename:	main.cc
-	Main file for QProg
-	Interface for DIY PIC programmer hardware
-	
-	Created December 17, 2005 by Brandon Fosdick
-	
-	Copyright 2005 Brandon Fosdick (BSD License)
+/*  Main file for QProg
+    Interface for DIY PIC programmer hardware
+
+    Created December 17, 2005 by Brandon Fosdick
+
+    Copyright 2005 Brandon Fosdick (BSD License)
 */
 
 #include<QApplication>
@@ -20,19 +19,19 @@ Delegate delegate;
 
 int main(int argc, char *argv[])
 {
-	QApplication app(argc, argv);
+    QApplication app(argc, argv);
 
 #ifdef	Q_OS_DARWIN
-	Cocoa::initialize();
+    Cocoa::initialize();
 #endif	//Q_OS_DARWIN
 
-	//These need to be set before QProg is constructed
+    // These need to be set before QProg is constructed
     QCoreApplication::setOrganizationName("bfoz.net");
-	QCoreApplication::setOrganizationDomain("bfoz.net");
-	QCoreApplication::setApplicationName("QProg");
+    QCoreApplication::setOrganizationDomain("bfoz.net");
+    QCoreApplication::setApplicationName("QProg");
 
     // Post a startup event to the application delegate
     app.postEvent(&delegate, new QEvent((QEvent::Type)Delegate::Startup), Qt::LowEventPriority);
 
-	return app.exec();
+    return app.exec();
 }

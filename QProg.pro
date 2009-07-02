@@ -8,23 +8,23 @@ CONFIG	+= warn_on qt stl
 DEFINES += QPROG_VERSION=\"$${QPROG_VERSION}\"
 
 macx {
-	TARGET = QProg
-	MOC_DIR = build
-	OBJECTS_DIR = obj
+    TARGET = QProg
+    MOC_DIR = build
+    OBJECTS_DIR = obj
 } else:win32 {
-	TARGET = QProg
-	CONFIG += static			#Static link Qt libs
-	QMAKE_LFLAGS -= -mthreads	#remove dependency on mingwm10.dll (threaded exceptions)
-	CONFIG -= exceptions		#disallow exceptions due to above
+    TARGET = QProg
+    CONFIG += static		# Static link Qt libs
+    QMAKE_LFLAGS -= -mthreads	# remove dependency on mingwm10.dll (threaded exceptions)
+    CONFIG -= exceptions	# disallow exceptions due to above
 } else {
-	TARGET = qprog
+    TARGET = qprog
 }
 
 QT += network
 #SUBDIRS = src
 
 # Input
-HEADERS += src/mainwindow.h src/centralwidget.h src/intelhex.h 
+HEADERS += src/mainwindow.h src/centralwidget.h src/intelhex.h
 SOURCES += src/main.cc src/mainwindow.cc src/centralwidget.cc src/intelhex.cc
 HEADERS	+= include/delegate.h
 SOURCES	+= src/delegate.cc
@@ -35,15 +35,15 @@ HEADERS	+= src/chipinfo.h
 SOURCES	+= src/chipinfo.cc
 
 macx {
-	# Carbon-Cocoa interface for Sparkle
-	HEADERS += src/carbon_cocoa.h
-	SOURCES += src/carbon_cocoa.mm
+    # Carbon-Cocoa interface for Sparkle
+    HEADERS += src/carbon_cocoa.h
+    SOURCES += src/carbon_cocoa.mm
 
-	LIBS += -framework IOKit -framework CoreServices
-	LIBS += -framework Sparkle -framework Carbon
-	CONFIG += x86 ppc
-	QMAKE_INFO_PLIST = Info.plist
-	QMAKE_POST_LINK = "sed -e s/@@version@@/$${QPROG_VERSION}/g -i '' QProg.app/Contents/Info.plist"
+    LIBS += -framework IOKit -framework CoreServices
+    LIBS += -framework Sparkle -framework Carbon
+    CONFIG += x86 ppc
+    QMAKE_INFO_PLIST = Info.plist
+    QMAKE_POST_LINK = "sed -e s/@@version@@/$${QPROG_VERSION}/g -i '' QProg.app/Contents/Info.plist"
 }
 
 # qextserialport stuff
