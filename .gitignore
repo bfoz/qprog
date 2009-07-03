@@ -1,0 +1,7 @@
+build/
+obj/
+Makefile
+
+# xcode stuff
+*.app
+*.xcodeproj/
