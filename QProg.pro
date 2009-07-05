@@ -25,8 +25,8 @@ QT += network
 #SUBDIRS = src
 
 # Input
-HEADERS += src/mainwindow.h src/centralwidget.h src/intelhex.h
-SOURCES += src/main.cc src/mainwindow.cc src/centralwidget.cc src/intelhex.cc
+HEADERS += src/mainwindow.h src/centralwidget.h
+SOURCES += src/main.cc src/mainwindow.cc src/centralwidget.cc
 HEADERS	+= include/delegate.h
 SOURCES	+= src/delegate.cc
 
@@ -34,6 +34,12 @@ HEADERS	+= src/kitsrus.h
 SOURCES	+= src/kitsrus.cc
 HEADERS	+= src/chipinfo.h
 SOURCES	+= src/chipinfo.cc
+
+# libintelhex
+DEPENDPATH += lib/intelhex/include lib/intelhex/src
+INCLUDEPATH += lib/intelhex/include
+HEADERS += intelhex.h
+SOURCES += intelhex.cc
 
 macx {
     # Carbon-Cocoa interface for Sparkle
