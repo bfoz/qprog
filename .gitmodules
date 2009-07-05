@@ -1,0 +1,3 @@
+[submodule "lib/intelhex"]
+	path = lib/intelhex
+	url = git://github.com/bfoz/libintelhex.git
