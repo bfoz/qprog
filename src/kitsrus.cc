@@ -130,7 +130,7 @@ namespace kitsrus
 	intelhex::hex_data::size_type size;
 
 	//Figure out how many ROM words need to be written
-	size = 1 + HexData.max_addr_below(info.rom_size-1);
+	size = 1 + HexData.max_addr_below((info.rom_size-1)*2);
 
 	//Send program rom command
 	write(CMD_WRITE_ROM);
@@ -158,13 +158,8 @@ namespace kitsrus
 		    std::cerr << std::endl;
 		    return false;
 		case 'Y':
-		    for(i=0; i<(32/2); ++i)
-		    {
-			const intelhex::hex_data::element_t a = HexData.get(j, info.get_blank_value());
-			write( (a & 0xFF00) >> 8);
-			write( a & 0x00FF);
-			++j;
-		    }
+		    for(i=0; i < 32; ++i, ++j)
+			write( HexData.get(j, info.get_blank_value()) );
 		    if( !emit_callback((j>size)?size:j,size) )	//Emit callback and check for cancellation
 			return false;
 		    break;
@@ -215,12 +210,12 @@ namespace kitsrus
 		    emit_callback((progress>size)?size:progress,size);
 		    return true;
 		case 'Y':
-		    write( HexData.get(j, 0xFF) & 0x00FF);
+		    write(HexData.get(j, 0xFF));
 #if defined(WRITE_EEPROM_DEBUG)
 		    std::cout << __FUNCTION__ << ": wrote " << std::hex << HexData[j] << "\n";
 #endif
 		    ++j;
-		    write( HexData.get(j, 0xFF) & 0x00FF);
+		    write(HexData.get(j, 0xFF));
 #if defined(WRITE_EEPROM_DEBUG)
 		    std::cout << __FUNCTION__ << ": wrote " << std::hex << HexData[j] << "\n";
 #endif
@@ -260,14 +255,9 @@ namespace kitsrus
 	i = info.get_config_start();
 	if( i == 0 )
 	    return false;		// Config bits are never at address zero
-	const intelhex::hex_data::address_t end(i + info.numConfigWords());
-	for(unsigned j=8; i < end; ++i, j+=2)
-	{
-	    if( !HexData.isset(i) )
-		continue;
-	    tmp_config[j] = HexData[i] & 0x00FF;
-	    tmp_config[j+1] = (HexData[i] & 0xFF00) >> 8;
-	}
+	const intelhex::hex_data::address_t end(i + 2*info.numConfigWords());
+	for(unsigned j=8; i < end; ++i, ++j)
+	    tmp_config[j] = HexData[i];
 
 	unsigned progress(0);
 	const unsigned finished(info.is16bit() ? 50 : 25);
@@ -309,15 +299,13 @@ namespace kitsrus
     //Read from a PIC into a hex_data structure
     bool kitsrus_t::read_rom(intelhex::hex_data &HexData)
     {
-	intelhex::hex_data::element_t a;
+	const unsigned length = 2*info.rom_size;
 
 	write(CMD_READ_ROM);
-	for(unsigned i=0; i<info.rom_size; ++i)
+	for(unsigned i=0; i < length; ++i)
 	{
-	    a = (read() << 8) & 0xFF00;
-	    a |= read() & 0x00FF;
-	    HexData[i] = a;
-	    if( !emit_callback(i+1, info.rom_size) )	//Emit callback and check for cancellation
+	    HexData[i] = read();
+	    if( !emit_callback(i+1, length) )	//Emit callback and check for cancellation
 		return false;
 	}
 	return true;
@@ -369,11 +357,9 @@ namespace kitsrus
 	intelhex::hex_data::address_t j(info.get_config_start());
 	if( j == 0 )	// Config bits are never at address zero
 	    return false;
-	const intelhex::hex_data::address_t end(j + info.numConfigWords());
-	for(unsigned i=0x0A; j < end; i+=2, ++j)
-	{
-	    HexData[j] = (a[i+1] << 8) | a[i];
-	}
+	const intelhex::hex_data::address_t end(j + 2*info.numConfigWords());
+	for(unsigned i=0x0A; j < end; ++i, ++j)
+	    HexData[j] = a[i];
 
 	return true;
     }
