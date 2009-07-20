@@ -129,6 +129,9 @@ namespace kitsrus
 	uint16_t k;
 	intelhex::hex_data::size_type size;
 
+	// Set the value for device to be programmed
+	HexData.fill(info.get_blank_value());
+
 	//Figure out how many ROM words need to be written
 	size = 1 + HexData.max_addr_below((info.rom_size-1)*2);
 
@@ -159,7 +162,7 @@ namespace kitsrus
 		    return false;
 		case 'Y':
 		    for(i=0; i < 32; ++i, ++j)
-			write( HexData.get(j, info.get_blank_value()) );
+			write( HexData.get(j) );
 		    if( !emit_callback((j>size)?size:j,size) )	//Emit callback and check for cancellation
 			return false;
 		    break;
@@ -179,6 +182,9 @@ namespace kitsrus
 	intelhex::hex_data::address_t	eeprom_end;
 	uint16_t progress(0);
 	intelhex::hex_data::size_type size;
+
+	// Set the value for device to be programmed
+	HexData.fill(0xFF);
 
 	// Ideally we would figure out how many ROM words are going to be written
 	//  and then write only that. But, to make things simpler we'll just write
@@ -210,12 +216,12 @@ namespace kitsrus
 		    emit_callback((progress>size)?size:progress,size);
 		    return true;
 		case 'Y':
-		    write(HexData.get(j, 0xFF));
+		    write(HexData.get(j));
 #if defined(WRITE_EEPROM_DEBUG)
 		    std::cout << __FUNCTION__ << ": wrote " << std::hex << HexData[j] << "\n";
 #endif
 		    ++j;
-		    write(HexData.get(j, 0xFF));
+		    write(HexData.get(j));
 #if defined(WRITE_EEPROM_DEBUG)
 		    std::cout << __FUNCTION__ << ": wrote " << std::hex << HexData[j] << "\n";
 #endif
@@ -330,7 +336,7 @@ namespace kitsrus
 
     bool kitsrus_t::read_config(intelhex::hex_data &HexData)
     {
-	intelhex::hex_data::element_t	a[26];
+	intelhex::value_type a[26];
 	write(CMD_READ_CONFIG);
 
 	uint8_t b = read();	//Throw away the ack
