@@ -42,12 +42,7 @@ HEADERS += intelhex.h
 SOURCES += intelhex.cc
 
 macx {
-    # Carbon-Cocoa interface for Sparkle
-    HEADERS += src/carbon_cocoa.h
-    SOURCES += src/carbon_cocoa.mm
-
     LIBS += -framework IOKit -framework CoreServices
-    LIBS += -framework Sparkle -framework Carbon
     QMAKE_INFO_PLIST = Info.plist
     QMAKE_POST_LINK = "sed -e s/@@version@@/$${QPROG_VERSION}/g -i '' QProg.app/Contents/Info.plist"
 }

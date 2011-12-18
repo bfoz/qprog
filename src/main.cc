@@ -8,10 +8,6 @@
 
 #include<QApplication>
 
-#ifdef	Q_OS_DARWIN
-#include "carbon_cocoa.h"
-#endif	//Q_OS_DARWIN
-
 #include "delegate.h"
 #include "mainwindow.h"
 
@@ -20,10 +16,6 @@ Delegate delegate;
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-
-#ifdef	Q_OS_DARWIN
-    Cocoa::initialize();
-#endif	//Q_OS_DARWIN
 
     // These need to be set before QProg is constructed
     QCoreApplication::setOrganizationName("bfoz.net");
